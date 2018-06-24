@@ -18,6 +18,7 @@ let
                        };
   hsenv = newHaskellPackages.ghcWithPackages (p: with p; [
             fficxx
+            fficxx-runtime
           ]);
 in
 

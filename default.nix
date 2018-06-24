@@ -12,6 +12,9 @@ stdenv.mkDerivation rec {
 
   hardeningDisable = [ "all" ];
   nativeBuildInputs = [ cmake doxygen ];
-  cmakeFlags = [ "-DOGDF_WARNING_ERRORS=OFF" ];
+  cmakeFlags = [ "-DOGDF_WARNING_ERRORS=OFF"
+                 "-DCMAKE_CXX_FLAGS=-fPIC"
+                 #"-DCMAKE_VERBOSE_MAKEFILE=ON"
+               ];
 
 }
