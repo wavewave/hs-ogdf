@@ -10,6 +10,9 @@ import Foreign.Storable
 
 import OGDF.CppString
 import OGDF.Deletable
+import OGDF.DPoint
+import OGDF.DPolyline
+import OGDF.EdgeElement
 import OGDF.Graph
 import OGDF.GraphAttributes
 import OGDF.GraphIO
@@ -41,14 +44,31 @@ main = do
 
   forM_ [1 .. len-1] $ \i -> do
     left <- graphnewNode g
-    p_x <- graphAttributesx ga left
-    poke p_x (fromIntegral (-5*(i+1)))
-    p_y <- graphAttributesy ga left
-    poke p_y (fromIntegral (-20*i))
-    p_width <- graphAttributeswidth ga left
-    poke p_width (fromIntegral (10*(i+1)))
-    p_height <- graphAttributesheight ga left
-    poke p_height (fromIntegral 15)
+    p_x1 <- graphAttributesx ga left
+    poke p_x1 (fromIntegral (-5*(i+1)))
+    p_y1 <- graphAttributesy ga left
+    poke p_y1 (fromIntegral (-20*i))
+    p_width1 <- graphAttributeswidth ga left
+    poke p_width1 (fromIntegral (10*(i+1)))
+    p_height1 <- graphAttributesheight ga left
+    poke p_height1 15
+
+    bottom <- graphnewNode g
+    p_x2 <- graphAttributesx ga bottom
+    poke p_x2 (fromIntegral (20*(len-i)))
+    p_y2 <- graphAttributesy ga bottom
+    poke p_y2 (fromIntegral (5*(len+1-i)))
+    p_width2 <- graphAttributeswidth ga bottom
+    poke p_width2 15
+    p_height2 <- graphAttributesheight ga bottom
+    poke p_height2 (fromIntegral (10*(len+1-i)))
+
+    e <- graphnewEdge g left bottom
+    poly <- graphAttributesbends ga e
+    pt1 <- newDPoint 10 (fromIntegral (-20*i))
+    pt2 <- newDPoint (fromIntegral (20*(len-i))) (-10)
+    dPolylinepushBack poly pt1
+    dPolylinepushBack poly pt2
 
 
   withCString "manual_graph.gml" $ \cstr -> do

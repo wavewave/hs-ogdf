@@ -7,10 +7,6 @@ import FFICXX.Generate.Type.Class
 import FFICXX.Generate.Type.Module
 import FFICXX.Generate.Type.PackageInterface
 
--- TODO: Add this function to fficxx.
-ref_ :: CTypes -> Types
-ref_ t = CT (CRef t) NoConst
-
 
 cabal = Cabal { cabal_pkgname = "OGDF"
               , cabal_cheaderprefix = "OGDF"
@@ -45,12 +41,39 @@ string =
   ]
 
 
+dPoint :: Class
+dPoint =
+  Class cabal "DPoint" [deletable] mempty Nothing
+  [
+    Constructor [ double "x", double "y" ] Nothing
+  ]
+
+-- need to be defined with template
+dPolyline :: Class
+dPolyline =
+  Class cabal "DPolyline" [deletable] mempty Nothing
+  [
+    -- this is incorrect. only for now.
+    NonVirtual void_ "pushBack" [ cppclassref dPoint "x" ] Nothing
+
+  ]
+
+
+edgeElement :: Class
+edgeElement =
+  Class cabal "EdgeElement" [ deletable ] mempty Nothing
+  [
+  ]
+
+
+
 graph :: Class
 graph =
   Class cabal "Graph" [ deletable ] mempty Nothing
   [ Constructor [] Nothing
   , NonVirtual (cppclass_ nodeElement) "newNode" [] Nothing
   , NonVirtual (cppclass_ nodeElement) "newNode" [int "index"] (Just "newNode1")
+  , NonVirtual (cppclass_ edgeElement) "newEdge" [cppclass nodeElement "v", cppclass nodeElement "w"] Nothing
   ]
 
 
@@ -63,7 +86,7 @@ graphAttributes =
   , NonVirtual (ref_ CTDouble) "y" [ cppclass nodeElement "v" ] Nothing
   , NonVirtual (ref_ CTDouble) "width" [ cppclass nodeElement "v" ] Nothing
   , NonVirtual (ref_ CTDouble) "height" [ cppclass nodeElement "v" ] Nothing
-  -- , Virtual (ref_ CTDouble) "x" [ cppclass nodeElement "v" ] (Just "gAX")
+  , NonVirtual (cppclassref_ dPolyline) "bends" [ cppclass edgeElement "e" ] Nothing
   ]
 
 graphIO :: Class
@@ -100,6 +123,8 @@ layoutModule =
   AbstractClass cabal "LayoutModule" [ deletable ] mempty Nothing
   [ Virtual void_ "call" [ cppclassref graphAttributes "ga" ] Nothing
   ]
+
+
 
 medianHeuristic :: Class
 medianHeuristic =
@@ -148,6 +173,9 @@ classes = [ deletable
           --
           , string
           --
+          , dPoint
+          , dPolyline
+          , edgeElement
           , graph, graphAttributes, graphIO
           , hierarchyLayoutModule
           , layerByLayerSweep, layeredCrossMinModule, layoutModule
@@ -162,7 +190,10 @@ toplevelfunctions = [ ]
 
 templates = [  ]
 
-headerMap = [ ("string"       , ([NS "std"          ], [HdrName "string"   ]))
+headerMap = [ ("string"         , ([NS "std"          ], [HdrName "string"   ]))
+            , ("DPoint"         , ([NS "ogdf"], [HdrName "ogdf/basic/geometry.h"]))
+            , ("DPolyline"      , ([NS "ogdf"], [HdrName "ogdf/basic/geometry.h"]))
+            , ("EdgeElement"    , ([NS "ogdf"], [HdrName "ogdf/basic/Graph_d.h"]))
             , ("Graph"          , ([NS "ogdf"], [HdrName "ogdf/basic/Graph_d.h"]))
             , ("GraphAttributes", ([NS "ogdf"], [HdrName "ogdf/basic/GraphAttributes.h"]))
             , ("GraphIO"        , ([NS "ogdf"], [HdrName "ogdf/fileformats/GraphIO.h"]))
