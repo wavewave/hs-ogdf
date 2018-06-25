@@ -7,6 +7,11 @@ import FFICXX.Generate.Type.Class
 import FFICXX.Generate.Type.Module
 import FFICXX.Generate.Type.PackageInterface
 
+-- TODO: Add this function to fficxx.
+ref_ :: CTypes -> Types
+ref_ t = CT (CRef t) NoConst
+
+
 cabal = Cabal { cabal_pkgname = "OGDF"
               , cabal_cheaderprefix = "OGDF"
               , cabal_moduleprefix = "OGDF"
@@ -37,7 +42,6 @@ string =
   Class cabal "string" [ deletable ] mempty  (Just "CppString")
   [ Constructor [ cstring "p" ] Nothing
   , NonVirtual cstring_ "c_str" [] Nothing
-  -- , Destructor Nothing
   ]
 
 
@@ -45,14 +49,21 @@ graph :: Class
 graph =
   Class cabal "Graph" [ deletable ] mempty Nothing
   [ Constructor [] Nothing
-  -- , Destructor (Just "deleteGraph")
+  , NonVirtual (cppclass_ nodeElement) "newNode" [] Nothing
+  , NonVirtual (cppclass_ nodeElement) "newNode" [int "index"] (Just "newNode1")
   ]
+
+
 
 graphAttributes :: Class
 graphAttributes =
   Class cabal "GraphAttributes" [ deletable ] mempty Nothing
   [ Constructor [ cppclassref graph "g", long "initAttributes" ] Nothing
-  -- , Destructor (Just "deleteGraphAttributes")
+  , NonVirtual (ref_ CTDouble) "x" [ cppclass nodeElement "v" ] Nothing
+  , NonVirtual (ref_ CTDouble) "y" [ cppclass nodeElement "v" ] Nothing
+  , NonVirtual (ref_ CTDouble) "width" [ cppclass nodeElement "v" ] Nothing
+  , NonVirtual (ref_ CTDouble) "height" [ cppclass nodeElement "v" ] Nothing
+  -- , Virtual (ref_ CTDouble) "x" [ cppclass nodeElement "v" ] (Just "gAX")
   ]
 
 graphIO :: Class
@@ -96,6 +107,13 @@ medianHeuristic =
   [ Constructor [] Nothing
   ]
 
+
+nodeElement :: Class
+nodeElement =
+  Class cabal "NodeElement" [ deletable ] mempty Nothing
+  [
+  ]
+
 optimalHierarchyLayout :: Class
 optimalHierarchyLayout =
   Class cabal "OptimalHierarchyLayout" [ deletable, hierarchyLayoutModule ] mempty Nothing
@@ -127,13 +145,14 @@ sugiyamaLayout =
   ]
 
 classes = [ deletable
-          -- 
+          --
           , string
           --
           , graph, graphAttributes, graphIO
           , hierarchyLayoutModule
           , layerByLayerSweep, layeredCrossMinModule, layoutModule
           , medianHeuristic
+          , nodeElement
           , optimalHierarchyLayout, optimalRanking
           , rankingModule
           , sugiyamaLayout
@@ -153,6 +172,7 @@ headerMap = [ ("string"       , ([NS "std"          ], [HdrName "string"   ]))
             , ("LayoutModule"   , ([NS "ogdf"], [HdrName "ogdf/module/LayoutModule.h"]))
 
             , ("MedianHeuristic" , ([NS "ogdf"], [HdrName "ogdf/layered/MedianHeuristic.h"]))
+            , ("NodeElement"     , ([NS "ogdf"], [HdrName "ogdf/basic/Graph_d.h"]))
             , ("OptimalHierarchyLayout" , ([NS "ogdf"], [HdrName "ogdf/layered/OptimalHierarchyLayout.h"]))
             , ("OptimalRanking" , ([NS "ogdf"], [HdrName "ogdf/layered/OptimalRanking.h"]))
             , ("RankingModule"  , ([NS "ogdf"], [HdrName "ogdf/module/RankingModule.h"]))
