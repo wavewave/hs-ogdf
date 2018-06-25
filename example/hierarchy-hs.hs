@@ -7,6 +7,9 @@ import System.IO (hPutStrLn,stderr)
 import OGDF.Graph
 import OGDF.GraphAttributes
 import OGDF.GraphIO
+import OGDF.LayoutModule
+import OGDF.MedianHeuristic
+import OGDF.OptimalHierarchyLayout
 import OGDF.OptimalRanking
 import OGDF.SugiyamaLayout
 
@@ -52,3 +55,20 @@ main = do
       putStrLn "or created"
       sugiyamaLayoutsetRanking sl or
       putStrLn "setRanking done"
+      mh <- newMedianHeuristic
+      putStrLn "mh created"
+      sugiyamaLayoutsetCrossMin sl mh
+      putStrLn "setCrossMin"
+
+      ohl <- newOptimalHierarchyLayout
+      putStrLn "ohl created"
+      optimalHierarchyLayoutlayerDistance ohl 30.0
+      optimalHierarchyLayoutnodeDistance ohl 25.0
+      optimalHierarchyLayoutweightBalancing ohl 0.8
+      sugiyamaLayoutsetLayout sl ohl
+      putStrLn "setLayout ohl"
+      call sl ga
+      putStrLn "SL.call(GA)"
+      cstrout <- newCString "unix-history-layout.gml"
+      graphIOwriteGML g cstrout
+      pure ()

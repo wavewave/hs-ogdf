@@ -25,6 +25,16 @@ cabalattr =
     , cabalattr_extrafiles = []
     }
 
+
+string :: Class
+string =
+  Class cabal "string" [] mempty  (Just "CppString")
+  [ Constructor [ cstring "p" ] Nothing
+  , NonVirtual cstring_ "c_str" [] Nothing
+  , Destructor Nothing
+  ]
+
+
 graph :: Class
 graph =
   Class cabal "Graph" [] mempty Nothing
@@ -40,7 +50,49 @@ graphAttributes =
 graphIO :: Class
 graphIO =
   Class cabal "GraphIO" [] mempty Nothing
-  [ Static bool_ "readGML" [ cppclassref graph "g", cstring "filename" ] Nothing
+  [ Static bool_ "readGML" [ cppclassref graph "g", cppclassref string "filename" ] Nothing
+  , Static bool_ "writeGML" [ cppclassref graph "g", cppclassref string "filename" ] Nothing
+  ]
+
+hierarchyLayoutModule :: Class
+hierarchyLayoutModule =
+  Class cabal "HierarchyLayoutModule" [] mempty Nothing
+  [
+  ]
+
+
+layerByLayerSweep :: Class
+layerByLayerSweep =
+  Class cabal "LayerByLayerSweep" [ layeredCrossMinModule ] mempty Nothing
+  [
+  ]
+
+
+layeredCrossMinModule :: Class
+layeredCrossMinModule =
+  Class cabal "LayeredCrossMinModule" [] mempty Nothing
+  [
+  ]
+
+layoutModule :: Class
+layoutModule =
+  AbstractClass cabal "LayoutModule" [] mempty Nothing
+  [ Virtual void_ "call" [ cppclassref graphAttributes "ga" ] Nothing
+  ]
+
+medianHeuristic :: Class
+medianHeuristic =
+  Class cabal "MedianHeuristic" [ layerByLayerSweep ] mempty Nothing
+  [ Constructor [] Nothing
+  ]
+
+optimalHierarchyLayout :: Class
+optimalHierarchyLayout =
+  Class cabal "OptimalHierarchyLayout" [ hierarchyLayoutModule ] mempty Nothing
+  [ Constructor [] Nothing
+  , NonVirtual void_ "layerDistance" [ double "x" ] Nothing
+  , NonVirtual void_ "nodeDistance" [ double "x" ] Nothing
+  , NonVirtual void_ "weightBalancing" [ double "w" ] Nothing
   ]
 
 optimalRanking :: Class
@@ -57,13 +109,19 @@ rankingModule =
 
 sugiyamaLayout :: Class
 sugiyamaLayout =
-  Class cabal "SugiyamaLayout" [] mempty Nothing
+  Class cabal "SugiyamaLayout" [ layoutModule ] mempty Nothing
   [ Constructor [] Nothing
+  , NonVirtual void_ "setCrossMin" [cppclass layeredCrossMinModule "pCrossMin"] Nothing
+  , NonVirtual void_ "setLayout" [cppclass hierarchyLayoutModule "pLayout"] Nothing
   , NonVirtual void_ "setRanking" [cppclass rankingModule "pRanking"] Nothing
   ]
 
-classes = [ graph, graphAttributes, graphIO
-          , optimalRanking
+classes = [ string
+          , graph, graphAttributes, graphIO
+          , hierarchyLayoutModule
+          , layerByLayerSweep, layeredCrossMinModule, layoutModule
+          , medianHeuristic
+          , optimalHierarchyLayout, optimalRanking
           , rankingModule
           , sugiyamaLayout
           ]
@@ -75,6 +133,13 @@ templates = [  ]
 headerMap = [ ("Graph"          , ([NS "ogdf"], [HdrName "ogdf/basic/Graph_d.h"]))
             , ("GraphAttributes", ([NS "ogdf"], [HdrName "ogdf/basic/GraphAttributes.h"]))
             , ("GraphIO"        , ([NS "ogdf"], [HdrName "ogdf/fileformats/GraphIO.h"]))
+            , ("HierarchyLayoutModule", ([NS "ogdf"], [HdrName "ogdf/module/HierarchyLayoutModule.h"]))
+            , ("LayerByLayerSweep" , ([NS "ogdf"], [HdrName "ogdf/module/LayerByLayerSweep.h"]))
+            , ("LayeredCrossMinModule" , ([NS "ogdf"], [HdrName "ogdf/module/LayeredCrossMinModule.h"]))
+            , ("LayoutModule"   , ([NS "ogdf"], [HdrName "ogdf/module/LayoutModule.h"]))
+
+            , ("MedianHeuristic" , ([NS "ogdf"], [HdrName "ogdf/layered/MedianHeuristic.h"]))
+            , ("OptimalHierarchyLayout" , ([NS "ogdf"], [HdrName "ogdf/layered/OptimalHierarchyLayout.h"]))
             , ("OptimalRanking" , ([NS "ogdf"], [HdrName "ogdf/layered/OptimalRanking.h"]))
             , ("RankingModule"  , ([NS "ogdf"], [HdrName "ogdf/module/RankingModule.h"]))
             , ("SugiyamaLayout" , ([NS "ogdf"], [HdrName "ogdf/layered/SugiyamaLayout.h"]))
