@@ -5,6 +5,7 @@ import Foreign.C.String (newCString)
 import System.IO (hPutStrLn,stderr)
 
 import OGDF.CppString
+import OGDF.Deletable (delete)
 import OGDF.Graph
 import OGDF.GraphAttributes
 import OGDF.GraphIO
@@ -74,4 +75,10 @@ main = do
       cstrout <- newCString "unix-history-layout.gml"
       strout <- newCppString cstrout
       graphIOwriteGML ga strout
+      delete strout
+      delete sl
       pure ()
+
+  delete g
+  delete ga
+  delete str

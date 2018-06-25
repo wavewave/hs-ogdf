@@ -26,30 +26,38 @@ cabalattr =
     }
 
 
+deletable :: Class
+deletable =
+  AbstractClass cabal "Deletable" [] mempty Nothing
+  [ Destructor Nothing
+  ]
+
 string :: Class
 string =
-  Class cabal "string" [] mempty  (Just "CppString")
+  Class cabal "string" [ deletable ] mempty  (Just "CppString")
   [ Constructor [ cstring "p" ] Nothing
   , NonVirtual cstring_ "c_str" [] Nothing
-  , Destructor Nothing
+  -- , Destructor Nothing
   ]
 
 
 graph :: Class
 graph =
-  Class cabal "Graph" [] mempty Nothing
+  Class cabal "Graph" [ deletable ] mempty Nothing
   [ Constructor [] Nothing
+  -- , Destructor (Just "deleteGraph")
   ]
 
 graphAttributes :: Class
 graphAttributes =
-  Class cabal "GraphAttributes" [] mempty Nothing
+  Class cabal "GraphAttributes" [ deletable ] mempty Nothing
   [ Constructor [ cppclassref graph "g", long "initAttributes" ] Nothing
+  -- , Destructor (Just "deleteGraphAttributes")
   ]
 
 graphIO :: Class
 graphIO =
-  Class cabal "GraphIO" [] mempty Nothing
+  Class cabal "GraphIO" [ deletable ] mempty Nothing
   [ -- Static bool_ "readGML" [ cppclassref graph "g", cppclassref string "filename" ] Nothing
     Static bool_ "readGML" [ cppclassref graphAttributes "ga", cppclassref graph "g", cppclassref string "filename" ] Nothing
   -- , Static bool_ "writeGML" [ cppclassref graph "g", cppclassref string "filename" ] Nothing
@@ -58,39 +66,39 @@ graphIO =
 
 hierarchyLayoutModule :: Class
 hierarchyLayoutModule =
-  Class cabal "HierarchyLayoutModule" [] mempty Nothing
+  Class cabal "HierarchyLayoutModule" [ deletable ] mempty Nothing
   [
   ]
 
 
 layerByLayerSweep :: Class
 layerByLayerSweep =
-  Class cabal "LayerByLayerSweep" [ layeredCrossMinModule ] mempty Nothing
+  Class cabal "LayerByLayerSweep" [ deletable, layeredCrossMinModule ] mempty Nothing
   [
   ]
 
 
 layeredCrossMinModule :: Class
 layeredCrossMinModule =
-  Class cabal "LayeredCrossMinModule" [] mempty Nothing
+  Class cabal "LayeredCrossMinModule" [ deletable ] mempty Nothing
   [
   ]
 
 layoutModule :: Class
 layoutModule =
-  AbstractClass cabal "LayoutModule" [] mempty Nothing
+  AbstractClass cabal "LayoutModule" [ deletable ] mempty Nothing
   [ Virtual void_ "call" [ cppclassref graphAttributes "ga" ] Nothing
   ]
 
 medianHeuristic :: Class
 medianHeuristic =
-  Class cabal "MedianHeuristic" [ layerByLayerSweep ] mempty Nothing
+  Class cabal "MedianHeuristic" [ deletable, layerByLayerSweep ] mempty Nothing
   [ Constructor [] Nothing
   ]
 
 optimalHierarchyLayout :: Class
 optimalHierarchyLayout =
-  Class cabal "OptimalHierarchyLayout" [ hierarchyLayoutModule ] mempty Nothing
+  Class cabal "OptimalHierarchyLayout" [ deletable, hierarchyLayoutModule ] mempty Nothing
   [ Constructor [] Nothing
   , NonVirtual void_ "layerDistance" [ double "x" ] Nothing
   , NonVirtual void_ "nodeDistance" [ double "x" ] Nothing
@@ -99,26 +107,29 @@ optimalHierarchyLayout =
 
 optimalRanking :: Class
 optimalRanking =
-  Class cabal "OptimalRanking" [rankingModule] mempty Nothing
+  Class cabal "OptimalRanking" [ deletable, rankingModule ] mempty Nothing
   [ Constructor [] Nothing
   ]
 
 rankingModule :: Class
 rankingModule =
-  Class cabal "RankingModule" [] mempty Nothing
+  Class cabal "RankingModule" [ deletable ] mempty Nothing
   [
   ]
 
 sugiyamaLayout :: Class
 sugiyamaLayout =
-  Class cabal "SugiyamaLayout" [ layoutModule ] mempty Nothing
+  Class cabal "SugiyamaLayout" [ deletable, layoutModule ] mempty Nothing
   [ Constructor [] Nothing
   , NonVirtual void_ "setCrossMin" [cppclass layeredCrossMinModule "pCrossMin"] Nothing
   , NonVirtual void_ "setLayout" [cppclass hierarchyLayoutModule "pLayout"] Nothing
   , NonVirtual void_ "setRanking" [cppclass rankingModule "pRanking"] Nothing
   ]
 
-classes = [ string
+classes = [ deletable
+          -- 
+          , string
+          --
           , graph, graphAttributes, graphIO
           , hierarchyLayoutModule
           , layerByLayerSweep, layeredCrossMinModule, layoutModule
