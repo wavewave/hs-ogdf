@@ -50,8 +50,10 @@ graphAttributes =
 graphIO :: Class
 graphIO =
   Class cabal "GraphIO" [] mempty Nothing
-  [ Static bool_ "readGML" [ cppclassref graph "g", cppclassref string "filename" ] Nothing
-  , Static bool_ "writeGML" [ cppclassref graph "g", cppclassref string "filename" ] Nothing
+  [ -- Static bool_ "readGML" [ cppclassref graph "g", cppclassref string "filename" ] Nothing
+    Static bool_ "readGML" [ cppclassref graphAttributes "ga", cppclassref graph "g", cppclassref string "filename" ] Nothing
+  -- , Static bool_ "writeGML" [ cppclassref graph "g", cppclassref string "filename" ] Nothing
+  , Static bool_ "writeGML" [ cppclassref graphAttributes "ga", cppclassref string "filename" ] Nothing -- (Just "graphIOwriteGMLGA")
   ]
 
 hierarchyLayoutModule :: Class
@@ -130,7 +132,8 @@ toplevelfunctions = [ ]
 
 templates = [  ]
 
-headerMap = [ ("Graph"          , ([NS "ogdf"], [HdrName "ogdf/basic/Graph_d.h"]))
+headerMap = [ ("string"       , ([NS "std"          ], [HdrName "string"   ]))
+            , ("Graph"          , ([NS "ogdf"], [HdrName "ogdf/basic/Graph_d.h"]))
             , ("GraphAttributes", ([NS "ogdf"], [HdrName "ogdf/basic/GraphAttributes.h"]))
             , ("GraphIO"        , ([NS "ogdf"], [HdrName "ogdf/fileformats/GraphIO.h"]))
             , ("HierarchyLayoutModule", ([NS "ogdf"], [HdrName "ogdf/module/HierarchyLayoutModule.h"]))

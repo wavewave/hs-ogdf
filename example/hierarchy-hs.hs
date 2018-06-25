@@ -4,6 +4,7 @@ import Data.Bits ((.|.))
 import Foreign.C.String (newCString)
 import System.IO (hPutStrLn,stderr)
 
+import OGDF.CppString
 import OGDF.Graph
 import OGDF.GraphAttributes
 import OGDF.GraphIO
@@ -44,7 +45,8 @@ main = do
   putStrLn "ga created"
 
   cstr <- newCString "example/unix-history.gml"
-  b <- graphIOreadGML g cstr
+  str <- newCppString cstr
+  b <- graphIOreadGML ga g str
 
   if (b == 0)
     then hPutStrLn stderr "Could not load unix-history.gml"
@@ -70,5 +72,6 @@ main = do
       call sl ga
       putStrLn "SL.call(GA)"
       cstrout <- newCString "unix-history-layout.gml"
-      graphIOwriteGML g cstrout
+      strout <- newCppString cstrout
+      graphIOwriteGML ga strout
       pure ()

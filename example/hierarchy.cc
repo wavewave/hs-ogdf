@@ -33,6 +33,7 @@ int main()
     SL.setLayout(ohl);
 
     SL.call(GA);
+
     GraphIO::writeGML(GA, "unix-history-layout.gml");
 
     return 0;
