@@ -62,7 +62,11 @@ dPolyline =
 edgeElement :: Class
 edgeElement =
   Class cabal "EdgeElement" [ deletable ] mempty Nothing
-  [
+  [ NonVirtual int_ "index" [] Nothing
+  , NonVirtual (cppclass_ nodeElement) "source" [] Nothing
+  , NonVirtual (cppclass_ nodeElement) "target" [] Nothing
+  , NonVirtual self_ "succ" [] Nothing
+  , NonVirtual self_ "pred" [] Nothing
   ]
 
 
@@ -74,6 +78,10 @@ graph =
   , NonVirtual (cppclass_ nodeElement) "newNode" [] Nothing
   , NonVirtual (cppclass_ nodeElement) "newNode" [int "index"] (Just "newNode1")
   , NonVirtual (cppclass_ edgeElement) "newEdge" [cppclass nodeElement "v", cppclass nodeElement "w"] Nothing
+  , NonVirtual (cppclass_ nodeElement) "firstNode" [] Nothing
+  , NonVirtual (cppclass_ nodeElement) "lastNode" [] Nothing
+  , NonVirtual (cppclass_ edgeElement) "firstEdge" [] Nothing
+  , NonVirtual (cppclass_ edgeElement) "lastEdge" [] Nothing
   ]
 
 
@@ -136,7 +144,12 @@ medianHeuristic =
 nodeElement :: Class
 nodeElement =
   Class cabal "NodeElement" [ deletable ] mempty Nothing
-  [
+  [ NonVirtual int_ "index" [] Nothing
+  , NonVirtual int_ "indeg" [] Nothing
+  , NonVirtual int_ "outdeg" [] Nothing
+  , NonVirtual int_ "degree" [] Nothing
+  , NonVirtual self_ "succ" [] Nothing
+  , NonVirtual self_ "pred" [] Nothing
   ]
 
 optimalHierarchyLayout :: Class
