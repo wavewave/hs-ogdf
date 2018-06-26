@@ -19,6 +19,8 @@ let
   hsenv = newHaskellPackages.ghcWithPackages (p: with p; [
             fficxx
             fficxx-runtime
+            formatting
+            monad-loops
             cabal-install
           ]);
 in

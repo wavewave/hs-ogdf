@@ -1,13 +1,20 @@
+{-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+
 module Main where
 
-import Control.Monad (when)
+import Control.Monad (void, when)
+import Control.Monad.Loops (iterateUntilM)
 import Data.Bits ((.|.))
 import Data.Foldable (forM_)
+import qualified Data.Text as T
+import qualified Data.Text.IO as TIO
 import Foreign.C.String (withCString)
 import Foreign.C.Types
 import Foreign.Ptr
 import Foreign.Storable
+import           Formatting ((%),(%.))
+import qualified Formatting as F
 
 import OGDF.CppString
 import OGDF.Deletable
@@ -71,17 +78,25 @@ main = do
     dPolylinepushBack poly pt1
     dPolylinepushBack poly pt2
 
+  n0@(NodeElement n0') <- graphfirstNode g
 
-  g2 <- newGraph
-  NodeElement n <- graphfirstNode g2
-
-  when (n == nullPtr) $ do
-    putStrLn "null"
-
-  -- withCString "manual_graph.gml" $ \cstr -> do
-  --   str <- newCppString cstr
-  --   graphIOwriteGML ga str
-  --   delete str
+  when (n0' /= nullPtr) $ void $
+    flip (iterateUntilM (\(NodeElement n'') -> n'' == nullPtr)) n0 $ \n -> do
+      i <- nodeElementindex n
+      x <- peek =<< graphAttributesx      ga n
+      y <- peek =<< graphAttributesy      ga n
+      w <- peek =<< graphAttributeswidth  ga n
+      h <- peek =<< graphAttributesheight ga n
+      let int = F.left 3 ' ' %. F.int
+          dbl = F.left 6 ' ' %. F.float
+          txt = F.sformat (int % " " % dbl % " " % dbl % " " % dbl % " " % dbl)
+                  (fromIntegral i :: Int)
+                  (realToFrac x :: Double)
+                  (realToFrac y :: Double)
+                  (realToFrac w :: Double)
+                  (realToFrac h :: Double)
+      TIO.putStrLn txt
+      nodeElementsucc n
 
   delete ga
   delete g
