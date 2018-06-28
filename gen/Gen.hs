@@ -104,6 +104,7 @@ graphIO =
     Static bool_ "readGML" [ cppclassref graphAttributes "ga", cppclassref graph "g", cppclassref string "filename" ] Nothing
   -- , Static bool_ "writeGML" [ cppclassref graph "g", cppclassref string "filename" ] Nothing
   , Static bool_ "writeGML" [ cppclassref graphAttributes "ga", cppclassref string "filename" ] Nothing -- (Just "graphIOwriteGMLGA")
+  , Static bool_ "drawSVG" [ cppclassref graphAttributes "ga", cppclassref string "filename" ] Nothing
   ]
 
 hierarchyLayoutModule :: Class
