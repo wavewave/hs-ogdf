@@ -23,7 +23,9 @@ stdcxx_cabal = Cabal { cabal_pkgname = "stdcxx"
 -- import from stdcxx
 deletable :: Class
 deletable =
-  AbstractClass stdcxx_cabal "Deletable" [] mempty Nothing [ ]
+  AbstractClass stdcxx_cabal "Deletable" [] mempty Nothing
+  [ Destructor Nothing
+  ]
 
 
 -- import from stdcxx
