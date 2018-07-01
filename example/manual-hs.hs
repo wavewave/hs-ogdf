@@ -8,8 +8,8 @@ import Foreign.C.Types
 import Foreign.Ptr
 import Foreign.Storable
 
-import OGDF.CppString
-import OGDF.Deletable
+import STD.CppString
+import STD.Deletable
 import OGDF.DPoint
 import OGDF.DPolyline
 import OGDF.EdgeElement

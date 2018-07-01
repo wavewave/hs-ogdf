@@ -7,15 +7,44 @@ import FFICXX.Generate.Type.Class
 import FFICXX.Generate.Type.Module
 import FFICXX.Generate.Type.PackageInterface
 
+-- -------------------------------------------------------------------
+-- import from stdcxx
+-- -------------------------------------------------------------------
+
+-- import from stdcxx
+stdcxx_cabal = Cabal { cabal_pkgname = "stdcxx"
+                     , cabal_cheaderprefix = "STD"
+                     , cabal_moduleprefix = "STD"
+                     , cabal_additional_c_incs = []
+                     , cabal_additional_c_srcs = []
+                     , cabal_additional_pkgdeps = []
+                     }
+
+-- import from stdcxx
+deletable :: Class
+deletable =
+  AbstractClass stdcxx_cabal "Deletable" [] mempty Nothing [ ]
+
+
+-- import from stdcxx
+string :: Class
+string =
+  Class stdcxx_cabal "string" [ ] mempty  (Just "CppString") [ ]
+
+-- -------------------------------------------------------------------
+-- OGDF definition
+-- -------------------------------------------------------------------
+
 
 cabal = Cabal { cabal_pkgname = "OGDF"
               , cabal_cheaderprefix = "OGDF"
               , cabal_moduleprefix = "OGDF"
               , cabal_additional_c_incs = []
               , cabal_additional_c_srcs = []
+              , cabal_additional_pkgdeps = [ CabalName "stdcxx" ]
               }
 
-extraDep = []
+extraDep = [ ]
 
 cabalattr =
     CabalAttr
@@ -26,19 +55,6 @@ cabalattr =
     , cabalattr_extrafiles = []
     }
 
-
-deletable :: Class
-deletable =
-  AbstractClass cabal "Deletable" [] mempty Nothing
-  [ Destructor Nothing
-  ]
-
-string :: Class
-string =
-  Class cabal "string" [ deletable ] mempty  (Just "CppString")
-  [ Constructor [ cstring "p" ] Nothing
-  , NonVirtual cstring_ "c_str" [] Nothing
-  ]
 
 
 dPoint :: Class
@@ -95,17 +111,17 @@ graphAttributes =
   , NonVirtual (ref_ CTDouble) "width" [ cppclass nodeElement "v" ] Nothing
   , NonVirtual (ref_ CTDouble) "height" [ cppclass nodeElement "v" ] Nothing
   , NonVirtual (cppclassref_ dPolyline) "bends" [ cppclass edgeElement "e" ] Nothing
+  , NonVirtual (cppclassref_ string) "label" [ cppclass nodeElement "v" ] Nothing
   ]
 
 graphIO :: Class
 graphIO =
   Class cabal "GraphIO" [ deletable ] mempty Nothing
-  [ -- Static bool_ "readGML" [ cppclassref graph "g", cppclassref string "filename" ] Nothing
-    Static bool_ "readGML" [ cppclassref graphAttributes "ga", cppclassref graph "g", cppclassref string "filename" ] Nothing
-  -- , Static bool_ "writeGML" [ cppclassref graph "g", cppclassref string "filename" ] Nothing
-  , Static bool_ "writeGML" [ cppclassref graphAttributes "ga", cppclassref string "filename" ] Nothing -- (Just "graphIOwriteGMLGA")
+  [ Static bool_ "readGML" [ cppclassref graphAttributes "ga", cppclassref graph "g", cppclassref string "filename" ] Nothing
+  , Static bool_ "writeGML" [ cppclassref graphAttributes "ga", cppclassref string "filename" ] Nothing
   , Static bool_ "drawSVG" [ cppclassref graphAttributes "ga", cppclassref string "filename" ] Nothing
   ]
+
 
 hierarchyLayoutModule :: Class
 hierarchyLayoutModule =
@@ -183,11 +199,7 @@ sugiyamaLayout =
   , NonVirtual void_ "setRanking" [cppclass rankingModule "pRanking"] Nothing
   ]
 
-classes = [ deletable
-          --
-          , string
-          --
-          , dPoint
+classes = [ dPoint
           , dPolyline
           , edgeElement
           , graph, graphAttributes, graphIO
@@ -204,8 +216,7 @@ toplevelfunctions = [ ]
 
 templates = [  ]
 
-headerMap = [ ("string"         , ([NS "std"          ], [HdrName "string"   ]))
-            , ("DPoint"         , ([NS "ogdf"], [HdrName "ogdf/basic/geometry.h"]))
+headerMap = [ ("DPoint"         , ([NS "ogdf"], [HdrName "ogdf/basic/geometry.h"]))
             , ("DPolyline"      , ([NS "ogdf"], [HdrName "ogdf/basic/geometry.h"]))
             , ("EdgeElement"    , ([NS "ogdf"], [HdrName "ogdf/basic/Graph_d.h"]))
             , ("Graph"          , ([NS "ogdf"], [HdrName "ogdf/basic/Graph_d.h"]))

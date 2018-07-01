@@ -16,8 +16,8 @@ import Foreign.Storable
 import           Formatting ((%),(%.))
 import qualified Formatting as F
 
-import OGDF.CppString
-import OGDF.Deletable
+import STD.CppString
+import STD.Deletable
 import OGDF.DPoint
 import OGDF.DPolyline
 import OGDF.EdgeElement
