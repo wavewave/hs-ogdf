@@ -114,6 +114,7 @@ graphAttributes =
   , NonVirtual (ref_ CTDouble) "height" [ cppclass nodeElement "v" ] Nothing
   , NonVirtual (cppclassref_ dPolyline) "bends" [ cppclass edgeElement "e" ] Nothing
   , NonVirtual (cppclassref_ string) "label" [ cppclass nodeElement "v" ] Nothing
+  , NonVirtual (cppclassref_ string) "label" [ cppclass edgeElement "e" ] (Just "graphAttributeslabelE")
   ]
 
 graphIO :: Class
