@@ -7,8 +7,8 @@ let
 
   fficxxSrc = fetchgit {
                 url = "https://github.com/wavewave/fficxx";
-                rev = "63a52aed0cc033927af3ad0b745ba647fe873292";
-                sha256 = "1g150gchbg22134wx6qpi683drccxn80sb4a39lwya9bkldwilla";
+                rev = "595af4805d45d8d33b4f09b423a0a1f42014ac61";
+                sha256 = "0hxbw4kzf5994ml7iap3bx5jnjywg2s9xvgq3lxcxnnqdgpdbd2x";
               };
 
   newHaskellPackages = haskellPackages.override {
