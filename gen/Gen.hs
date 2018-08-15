@@ -45,19 +45,15 @@ cabal = Cabal { cabal_pkgname = "OGDF"
               , cabal_additional_c_incs = []
               , cabal_additional_c_srcs = []
               , cabal_additional_pkgdeps = [ CabalName "stdcxx" ]
+              , cabal_license = Just "BSD3"
+              , cabal_licensefile = Just "LICENSE"
+              , cabal_extraincludedirs = [ ]
+              , cabal_extralibdirs = []
+              , cabal_extrafiles = []
+              , cabal_pkg_config_depends = []
               }
 
 extraDep = [ ]
-
-cabalattr =
-    CabalAttr
-    { cabalattr_license = Just "BSD3"
-    , cabalattr_licensefile = Just "LICENSE"
-    , cabalattr_extraincludedirs = [ ]
-    , cabalattr_extralibdirs = []
-    , cabalattr_extrafiles = []
-    }
-
 
 
 dPoint :: Class
@@ -244,6 +240,6 @@ main = do
   simpleBuilder
     "OGDF"
     headerMap
-    (cabal,cabalattr,classes,toplevelfunctions,templates)
+    (cabal,classes,toplevelfunctions,templates)
     [ "OGDF", "COIN" ]
     extraDep
