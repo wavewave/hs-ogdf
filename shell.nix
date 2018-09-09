@@ -5,12 +5,12 @@ with pkgs;
 let
   ogdf = callPackage ./default.nix {};
 
-  fficxxSrc = fetchgit {
-                url = "https://github.com/wavewave/fficxx";
-                rev = "1f62491453a5567c92f01091c3831c50bc45facb";
-                sha256 = "1mda4vr7qqyh7vsyl6vpa74fvk94cp43m8gmsivv952lwazr9mh6";
-              };
-  #fficxxSrc = ../fficxx; 
+  #fficxxSrc = fetchgit {
+  #              url = "https://github.com/wavewave/fficxx";
+  #              rev = "1f62491453a5567c92f01091c3831c50bc45facb";
+  #              sha256 = "1mda4vr7qqyh7vsyl6vpa74fvk94cp43m8gmsivv952lwazr9mh6";
+  #            };
+  fficxxSrc = ../fficxx; 
 
   newHaskellPackages = haskellPackages.override {
                          overrides = self: super: {

@@ -43,37 +43,37 @@ main = do
   ga <- newGraphAttributes g (nodeGraphics .|. edgeGraphics)
 
   forM_ [1 .. len-1] $ \i -> do
-    left <- graphnewNode g
-    p_x1 <- graphAttributesx ga left
+    left <- graph_newNode g
+    p_x1 <- graphAttributes_x ga left
     poke p_x1 (fromIntegral (-5*(i+1)))
-    p_y1 <- graphAttributesy ga left
+    p_y1 <- graphAttributes_y ga left
     poke p_y1 (fromIntegral (-20*i))
-    p_width1 <- graphAttributeswidth ga left
+    p_width1 <- graphAttributes_width ga left
     poke p_width1 (fromIntegral (10*(i+1)))
-    p_height1 <- graphAttributesheight ga left
+    p_height1 <- graphAttributes_height ga left
     poke p_height1 15
 
-    bottom <- graphnewNode g
-    p_x2 <- graphAttributesx ga bottom
+    bottom <- graph_newNode g
+    p_x2 <- graphAttributes_x ga bottom
     poke p_x2 (fromIntegral (20*(len-i)))
-    p_y2 <- graphAttributesy ga bottom
+    p_y2 <- graphAttributes_y ga bottom
     poke p_y2 (fromIntegral (5*(len+1-i)))
-    p_width2 <- graphAttributeswidth ga bottom
+    p_width2 <- graphAttributes_width ga bottom
     poke p_width2 15
-    p_height2 <- graphAttributesheight ga bottom
+    p_height2 <- graphAttributes_height ga bottom
     poke p_height2 (fromIntegral (10*(len+1-i)))
 
-    e <- graphnewEdge g left bottom
-    poly <- graphAttributesbends ga e
+    e <- graph_newEdge g left bottom
+    poly <- graphAttributes_bends ga e
     pt1 <- newDPoint 10 (fromIntegral (-20*i))
     pt2 <- newDPoint (fromIntegral (20*(len-i))) (-10)
-    dPolylinepushBack poly pt1
-    dPolylinepushBack poly pt2
+    dPolyline_pushBack poly pt1
+    dPolyline_pushBack poly pt2
 
 
   withCString "manual_graph.gml" $ \cstr -> do
     str <- newCppString cstr
-    graphIOwriteGML ga str
+    graphIO_writeGML ga str
     delete str
 
   delete ga

@@ -47,7 +47,7 @@ main = do
 
   cstr <- newCString "example/unix-history.gml"
   str <- newCppString cstr
-  b <- graphIOreadGML ga g str
+  b <- graphIO_readGML ga g str
 
   if (b == 0)
     then hPutStrLn stderr "Could not load unix-history.gml"
@@ -56,25 +56,25 @@ main = do
       putStrLn "sl created"
       or <- newOptimalRanking
       putStrLn "or created"
-      sugiyamaLayoutsetRanking sl or
+      sugiyamaLayout_setRanking sl or
       putStrLn "setRanking done"
       mh <- newMedianHeuristic
       putStrLn "mh created"
-      sugiyamaLayoutsetCrossMin sl mh
+      sugiyamaLayout_setCrossMin sl mh
       putStrLn "setCrossMin"
 
       ohl <- newOptimalHierarchyLayout
       putStrLn "ohl created"
-      optimalHierarchyLayoutlayerDistance ohl 30.0
-      optimalHierarchyLayoutnodeDistance ohl 25.0
-      optimalHierarchyLayoutweightBalancing ohl 0.8
-      sugiyamaLayoutsetLayout sl ohl
+      optimalHierarchyLayout_layerDistance ohl 30.0
+      optimalHierarchyLayout_nodeDistance ohl 25.0
+      optimalHierarchyLayout_weightBalancing ohl 0.8
+      sugiyamaLayout_setLayout sl ohl
       putStrLn "setLayout ohl"
       call sl ga
       putStrLn "SL.call(GA)"
       cstrout <- newCString "unix-history-layout.gml"
       strout <- newCppString cstrout
-      graphIOwriteGML ga strout
+      graphIO_writeGML ga strout
       delete strout
       delete sl
       pure ()
