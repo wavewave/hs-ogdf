@@ -1,20 +1,17 @@
-{ stdenv, fetchgit, cmake, doxygen }:
+{ stdenv, haskellPackages }:
 
-stdenv.mkDerivation rec {
- 
-  name = "ogdf-${version}";
-  version = "20180328";
-  src = fetchgit {
-    url = "http://github.com/wavewave/ogdf.git";
-    rev = "9baf3646ee745249e3bef0499f341474d2fb9a83";
-    sha256 = "09dalmavk6b69zv4py2pbmlviaw903dzny42jqkwf5la408vc8yv";
-  };
+let
+  OGDF-src = import ./gen.nix { inherit stdenv haskellPackages; };
+in
 
-  hardeningDisable = [ "all" ];
-  nativeBuildInputs = [ cmake doxygen ];
-  cmakeFlags = [ "-DOGDF_WARNING_ERRORS=OFF"
-                 "-DCMAKE_CXX_FLAGS=-fPIC"
-                 #"-DCMAKE_VERBOSE_MAKEFILE=ON"
-               ];
-
+{ mkDerivation, base, fficxx, fficxx-runtime, stdenv, template-haskell, stdcxx, ogdf }:
+mkDerivation {
+  pname = "OGDF";
+  version = "0.0";
+  src = OGDF-src;
+  libraryHaskellDepends = [
+    base fficxx fficxx-runtime template-haskell stdcxx
+  ];
+  librarySystemDepends = [ ogdf ];
+  license = stdenv.lib.licenses.bsd3;
 }

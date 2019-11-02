@@ -10,8 +10,6 @@
 with pkgs;
 
 let
-  # TODO: should be packaged into the upstream nixpkgs.
-  ogdf = callPackage ./ogdf/default.nix {};
 
   newHaskellPackages0 = haskellPackages.override {
     overrides = self: super: {
@@ -30,28 +28,21 @@ let
       "fficxx-runtime" = self.callCabal2nix "fficxx-runtime" (fficxxSrc + "/fficxx-runtime") {};
       "fficxx"         = self.callCabal2nix "fficxx"         (fficxxSrc + "/fficxx")         {};
       "stdcxx"         = self.callPackage stdcxxNix {};
-    };
-
+    }
+    // callPackage ./default.nix { inherit fficxxSrc; } self super;
   };
 
   hsenv = newHaskellPackages.ghcWithPackages (p: with p; [
-    cabal2nix
-    cabal-install
-    #
-    fficxx
-    fficxx-runtime
+    hgdal
     monad-loops
-    stdcxx
   ]);
 
 in
 
 stdenv.mkDerivation {
-  name = "hs-ogdf-dev";
+  name = "hgdal-env";
 
   buildInputs = [
-    ogdf
-    pkgconfig
     hsenv
   ];
 
