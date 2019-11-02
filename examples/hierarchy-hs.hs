@@ -45,7 +45,7 @@ main = do
                              .|. nodeTemplate )
   putStrLn "ga created"
 
-  cstr <- newCString "example/unix-history.gml"
+  cstr <- newCString "unix-history.gml"
   str <- newCppString cstr
   b <- graphIO_readGML ga g str
 

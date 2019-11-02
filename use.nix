@@ -10,6 +10,8 @@
 with pkgs;
 
 let
+  # TODO: should be packaged into the upstream nixpkgs.
+  ogdf = callPackage ./ogdf/default.nix {};
 
   newHaskellPackages0 = haskellPackages.override {
     overrides = self: super: {
@@ -29,18 +31,18 @@ let
       "fficxx"         = self.callCabal2nix "fficxx"         (fficxxSrc + "/fficxx")         {};
       "stdcxx"         = self.callPackage stdcxxNix {};
     }
-    // callPackage ./default.nix { inherit fficxxSrc; } self super;
+    // callPackage ./default.nix { inherit fficxxSrc ogdf; } self super;
   };
 
   hsenv = newHaskellPackages.ghcWithPackages (p: with p; [
-    hgdal
+    OGDF
     monad-loops
   ]);
 
 in
 
 stdenv.mkDerivation {
-  name = "hgdal-env";
+  name = "OGDF-env";
 
   buildInputs = [
     hsenv
