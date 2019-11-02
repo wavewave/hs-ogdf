@@ -1,0 +1,1 @@
+../examples/manual-hs.hs

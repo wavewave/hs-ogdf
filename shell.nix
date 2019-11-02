@@ -40,6 +40,7 @@ let
     #
     fficxx
     fficxx-runtime
+    formatting
     monad-loops
     stdcxx
   ]);
