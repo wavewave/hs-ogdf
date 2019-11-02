@@ -1,30 +1,64 @@
 module Main where
 
 import qualified Data.HashMap.Strict as HM
-import Data.Monoid (mempty)
+import System.Directory (getCurrentDirectory)
+import System.Environment (getArgs)
+import System.FilePath ((</>))
 --
-import FFICXX.Generate.Builder
-import FFICXX.Generate.Code.Primitive
-import FFICXX.Generate.Type.Cabal (Cabal(..),CabalName(..),AddCInc(..),AddCSrc(..))
-import FFICXX.Generate.Type.Config (ModuleUnit(..),ModuleUnitMap(..),ModuleUnitImports(..))
-import FFICXX.Generate.Type.Class
-import FFICXX.Generate.Type.Module
-import FFICXX.Generate.Type.PackageInterface
+import FFICXX.Generate.Builder        ( simpleBuilder )
+import FFICXX.Generate.Code.Primitive ( bool_
+                                      , charpp
+                                      , cppclass, cppclass_
+                                      , cppclassref, cppclassref_
+                                      , cstring, cstring_
+                                      , double, double_
+                                      , int, int_
+                                      , long
+                                      , ref_
+                                      , self_
+                                      , uint, uint_
+                                      , void_, voidp
+                                      )
+import FFICXX.Generate.Config         ( FFICXXConfig(..)
+                                      , SimpleBuilderConfig(..)
+                                      )
+import FFICXX.Generate.Type.Cabal     ( BuildType(..), Cabal(..), CabalName(..) )
+import FFICXX.Generate.Type.Config    ( ModuleUnit(..), ModuleUnitMap(..), ModuleUnitImports(..) )
+import FFICXX.Generate.Type.Class     ( Class(..)
+                                      , ClassAlias(..)
+                                      , CTypes(CTDouble)
+                                      , Function(..)
+                                      , ProtectedMethod(..)
+                                      , TopLevelFunction(..)
+                                      , Variable(..)
+                                      )
+import FFICXX.Generate.Type.Config    ( ModuleUnit(..)
+                                      , ModuleUnitImports(..)
+                                      )
+import FFICXX.Generate.Type.PackageInterface ( Namespace(..), HeaderName(..) )
+
 
 -- -------------------------------------------------------------------
 -- import from stdcxx
 -- -------------------------------------------------------------------
 
 -- import from stdcxx
-stdcxx_cabal = Cabal { cabal_pkgname = CabalName "stdcxx"
-                     , cabal_version = "0.5"
-                     , cabal_cheaderprefix = "STD"
-                     , cabal_moduleprefix = "STD"
-                     , cabal_additional_c_incs = []
-                     , cabal_additional_c_srcs = []
-                     , cabal_additional_pkgdeps = []
-                     , cabal_pkg_config_depends = []
-                     }
+stdcxx_cabal = Cabal {
+    cabal_pkgname            = CabalName "stdcxx"
+  , cabal_version            = "0.5"
+  , cabal_cheaderprefix      = "STD"
+  , cabal_moduleprefix       = "STD"
+  , cabal_additional_c_incs  = []
+  , cabal_additional_c_srcs  = []
+  , cabal_additional_pkgdeps = []
+  , cabal_license            = Nothing
+  , cabal_licensefile        = Nothing
+  , cabal_extraincludedirs   = []
+  , cabal_extralibdirs       = []
+  , cabal_extrafiles         = []
+  , cabal_pkg_config_depends = []
+  , cabal_buildType          = Simple
+  }
 
 -- import from stdcxx
 deletable :: Class
@@ -48,21 +82,24 @@ string =
 -- OGDF definition
 -- -------------------------------------------------------------------
 
+cabal = Cabal {
+    cabal_pkgname            = CabalName "OGDF"
+  , cabal_version            = "0.5"
+  , cabal_cheaderprefix      = "OGDF"
+  , cabal_moduleprefix       = "OGDF"
+  , cabal_additional_c_incs  = []
+  , cabal_additional_c_srcs  = []
+  , cabal_additional_pkgdeps = [ CabalName "stdcxx" ]
+  , cabal_license            = Just "BSD3"
+  , cabal_licensefile        = Just "LICENSE"
+  , cabal_extraincludedirs   = [ ]
+  , cabal_extralibdirs       = []
+  , cabal_extrafiles         = []
+  , cabal_pkg_config_depends = []
+  , cabal_buildType          = Simple
+  }
 
-cabal = Cabal { cabal_pkgname = CabalName "OGDF"
-              , cabal_version = "0.5"
-              , cabal_cheaderprefix = "OGDF"
-              , cabal_moduleprefix = "OGDF"
-              , cabal_additional_c_incs = []
-              , cabal_additional_c_srcs = []
-              , cabal_additional_pkgdeps = [ CabalName "stdcxx" ]
-              , cabal_license = Just "BSD3"
-              , cabal_licensefile = Just "LICENSE"
-              , cabal_extraincludedirs = [ ]
-              , cabal_extralibdirs = []
-              , cabal_extrafiles = []
-              , cabal_pkg_config_depends = []
-              }
+extraLib = [ "OGDF", "COIN" ]
 
 extraDep = [ ]
 
@@ -251,112 +288,128 @@ toplevelfunctions = [ ]
 
 templates = [  ]
 
-headerMap =
-  ModuleUnitMap $
-    HM.fromList
-      [ ( MU_Class "DPoint"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/basic/geometry.h" ]
-          }
-        )
-      , ( MU_Class "DPolyline"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/basic/geometry.h" ]
-          }
-        )
-      , ( MU_Class "EdgeElement"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/basic/Graph_d.h" ]
-          }
-        )
-      , ( MU_Class "Graph"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/basic/Graph_d.h" ]
-          }
-        )
-      , ( MU_Class "GraphAttributes"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/basic/GraphAttributes.h" ]
-          }
-        )
-      , ( MU_Class "GraphIO"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/fileformats/GraphIO.h" ]
-          }
-        )
-      , ( MU_Class "HierarchyLayoutModule"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/module/HierarchyLayoutModule.h" ]
-          }
-        )
-      , ( MU_Class "LayerByLayerSweep"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/module/LayerByLayerSweep.h" ]
-          }
-        )
-      , ( MU_Class "LayeredCrossMinModule"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/module/LayeredCrossMinModule.h" ]
-          }
-        )
-      , ( MU_Class "LayoutModule"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/module/LayoutModule.h" ]
-          }
-        )
-      , ( MU_Class "MedianHeuristic"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/layered/MedianHeuristic.h" ]
-          }
-        )
-      , ( MU_Class "NodeElement"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/basic/Graph_d.h" ]
-          }
-        )
-      , ( MU_Class "OptimalHierarchyLayout"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/layered/OptimalHierarchyLayout.h" ]
-          }
-        )
-      , ( MU_Class "OptimalRanking"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/layered/OptimalRanking.h" ]
-          }
-        )
-      , ( MU_Class "RankingModule"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/module/RankingModule.h" ]
-          }
-        )
-      , ( MU_Class "SugiyamaLayout"
-        , ModuleUnitImports {
-            muimports_namespaces = [ NS "ogdf" ]
-          , muimports_headers    = [ HdrName "ogdf/layered/SugiyamaLayout.h" ]
-          }
-        )
-      ]
+headers =
+  [ ( MU_Class "DPoint"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/basic/geometry.h" ]
+      }
+    )
+  , ( MU_Class "DPolyline"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/basic/geometry.h" ]
+      }
+    )
+  , ( MU_Class "EdgeElement"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/basic/Graph_d.h" ]
+      }
+    )
+  , ( MU_Class "Graph"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/basic/Graph_d.h" ]
+      }
+    )
+  , ( MU_Class "GraphAttributes"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/basic/GraphAttributes.h" ]
+      }
+    )
+  , ( MU_Class "GraphIO"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/fileformats/GraphIO.h" ]
+      }
+    )
+  , ( MU_Class "HierarchyLayoutModule"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/module/HierarchyLayoutModule.h" ]
+      }
+    )
+  , ( MU_Class "LayerByLayerSweep"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/module/LayerByLayerSweep.h" ]
+      }
+    )
+  , ( MU_Class "LayeredCrossMinModule"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/module/LayeredCrossMinModule.h" ]
+      }
+    )
+  , ( MU_Class "LayoutModule"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/module/LayoutModule.h" ]
+      }
+    )
+  , ( MU_Class "MedianHeuristic"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/layered/MedianHeuristic.h" ]
+      }
+    )
+  , ( MU_Class "NodeElement"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/basic/Graph_d.h" ]
+      }
+    )
+  , ( MU_Class "OptimalHierarchyLayout"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/layered/OptimalHierarchyLayout.h" ]
+      }
+    )
+  , ( MU_Class "OptimalRanking"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/layered/OptimalRanking.h" ]
+      }
+    )
+  , ( MU_Class "RankingModule"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/module/RankingModule.h" ]
+      }
+    )
+  , ( MU_Class "SugiyamaLayout"
+    , ModuleUnitImports {
+        muimports_namespaces = [ NS "ogdf" ]
+      , muimports_headers    = [ HdrName "ogdf/layered/SugiyamaLayout.h" ]
+      }
+    )
+  ]
 
 main :: IO ()
 main = do
-  simpleBuilder
-    "OGDF"
-    headerMap
-    (cabal,classes,toplevelfunctions,templates)
-    [ "OGDF", "COIN" ]
-    extraDep
+  args <- getArgs
+  let tmpldir =  if length args == 1
+                 then args !! 0
+                 else "../template"
+
+  cwd <- getCurrentDirectory
+  let fficfg = FFICXXConfig {
+                 fficxxconfig_workingDir     = cwd </> "tmp" </> "working"
+               , fficxxconfig_installBaseDir = cwd </> "hgdal"
+               , fficxxconfig_staticFileDir  = tmpldir
+               }
+      sbcfg  = SimpleBuilderConfig {
+                 sbcTopModule  = "OGDF"
+               , sbcModUnitMap = ModuleUnitMap (HM.fromList headers)
+               , sbcCabal      = cabal
+               , sbcClasses    = classes
+               , sbcTopLevels  = toplevelfunctions
+               , sbcTemplates  = templates
+               , sbcExtraLibs  = extraLib
+               , sbcExtraDeps  = extraDep
+               , sbcStaticFiles = ["LICENSE"]
+               }
+
+  simpleBuilder fficfg sbcfg
