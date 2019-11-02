@@ -397,7 +397,7 @@ main = do
   cwd <- getCurrentDirectory
   let fficfg = FFICXXConfig {
                  fficxxconfig_workingDir     = cwd </> "tmp" </> "working"
-               , fficxxconfig_installBaseDir = cwd </> "hgdal"
+               , fficxxconfig_installBaseDir = cwd </> "OGDF"
                , fficxxconfig_staticFileDir  = tmpldir
                }
       sbcfg  = SimpleBuilderConfig {
