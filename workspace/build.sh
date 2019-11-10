@@ -1,6 +1,5 @@
 rm -rf dist-newstyle
-cd ..; ghc Gen.hs ; cd workspace
-../Gen
+runhaskell ../Gen.hs
 cabal new-build OGDF
 cabal new-exec -- ghc hierarchy-hs.hs
 cabal new-exec -- ghc manual-hs.hs
