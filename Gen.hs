@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
 import qualified Data.HashMap.Strict as HM
@@ -23,7 +25,9 @@ import FFICXX.Generate.Config         ( FFICXXConfig(..)
                                       , SimpleBuilderConfig(..)
                                       )
 import FFICXX.Generate.Type.Cabal     ( BuildType(..), Cabal(..), CabalName(..) )
-import FFICXX.Generate.Type.Config    ( ModuleUnit(..), ModuleUnitMap(..), ModuleUnitImports(..) )
+import FFICXX.Generate.Type.Config    ( ModuleUnit(..), ModuleUnitMap(..), ModuleUnitImports(..)
+                                      , modImports
+                                      )
 import FFICXX.Generate.Type.Class     ( Class(..)
                                       , ClassAlias(..)
                                       , CTypes(CTDouble)
@@ -289,102 +293,22 @@ toplevelfunctions = [ ]
 templates = [  ]
 
 headers =
-  [ ( MU_Class "DPoint"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/basic/geometry.h" ]
-      }
-    )
-  , ( MU_Class "DPolyline"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/basic/geometry.h" ]
-      }
-    )
-  , ( MU_Class "EdgeElement"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/basic/Graph_d.h" ]
-      }
-    )
-  , ( MU_Class "Graph"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/basic/Graph_d.h" ]
-      }
-    )
-  , ( MU_Class "GraphAttributes"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/basic/GraphAttributes.h" ]
-      }
-    )
-  , ( MU_Class "GraphIO"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/fileformats/GraphIO.h" ]
-      }
-    )
-  , ( MU_Class "HierarchyLayoutModule"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/module/HierarchyLayoutModule.h" ]
-      }
-    )
-  , ( MU_Class "LayerByLayerSweep"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/module/LayerByLayerSweep.h" ]
-      }
-    )
-  , ( MU_Class "LayeredCrossMinModule"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/module/LayeredCrossMinModule.h" ]
-      }
-    )
-  , ( MU_Class "LayoutModule"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/module/LayoutModule.h" ]
-      }
-    )
-  , ( MU_Class "MedianHeuristic"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/layered/MedianHeuristic.h" ]
-      }
-    )
-  , ( MU_Class "NodeElement"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/basic/Graph_d.h" ]
-      }
-    )
-  , ( MU_Class "OptimalHierarchyLayout"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/layered/OptimalHierarchyLayout.h" ]
-      }
-    )
-  , ( MU_Class "OptimalRanking"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/layered/OptimalRanking.h" ]
-      }
-    )
-  , ( MU_Class "RankingModule"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/module/RankingModule.h" ]
-      }
-    )
-  , ( MU_Class "SugiyamaLayout"
-    , ModuleUnitImports {
-        muimports_namespaces = [ NS "ogdf" ]
-      , muimports_headers    = [ HdrName "ogdf/layered/SugiyamaLayout.h" ]
-      }
-    )
+  [ modImports "DPoint"          ["ogdf"] ["ogdf/basic/geometry.h"]
+  , modImports "DPolyline"       ["ogdf"] ["ogdf/basic/geometry.h"]
+  , modImports "EdgeElement"     ["ogdf"] ["ogdf/basic/Graph_d.h" ]
+  , modImports "Graph"           ["ogdf"] ["ogdf/basic/Graph_d.h" ]
+  , modImports "GraphAttributes" ["ogdf"] ["ogdf/basic/GraphAttributes.h"]
+  , modImports "GraphIO"         ["ogdf"] ["ogdf/fileformats/GraphIO.h"]
+  , modImports "HierarchyLayoutModule" ["ogdf"] ["ogdf/module/HierarchyLayoutModule.h"]
+  , modImports "LayerByLayerSweep" ["ogdf"] ["ogdf/module/LayerByLayerSweep.h"]
+  , modImports "LayeredCrossMinModule" ["ogdf"] ["ogdf/module/LayeredCrossMinModule.h"]
+  , modImports "LayoutModule"    ["ogdf"] ["ogdf/module/LayoutModule.h"]
+  , modImports "MedianHeuristic" ["ogdf"] ["ogdf/layered/MedianHeuristic.h"]
+  , modImports "NodeElement"     ["ogdf"] ["ogdf/basic/Graph_d.h" ]
+  , modImports "OptimalHierarchyLayout" ["ogdf"] ["ogdf/layered/OptimalHierarchyLayout.h"]
+  , modImports "OptimalRanking"  ["ogdf"] ["ogdf/layered/OptimalRanking.h"]
+  , modImports "RankingModule"   ["ogdf"] ["ogdf/module/RankingModule.h"]
+  , modImports "SugiyamaLayout"  ["ogdf"] ["ogdf/layered/SugiyamaLayout.h"]
   ]
 
 main :: IO ()
