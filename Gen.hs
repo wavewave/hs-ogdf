@@ -39,7 +39,6 @@ import FFICXX.Generate.Type.Class     ( Class(..)
 import FFICXX.Generate.Type.Config    ( ModuleUnit(..)
                                       , ModuleUnitImports(..)
                                       )
-import FFICXX.Runtime.CodeGen.C       ( Namespace(..), HeaderName(..) )
 
 
 -- -------------------------------------------------------------------
@@ -81,6 +80,7 @@ string =
   []
   []
   []
+  False
 
 -- -------------------------------------------------------------------
 -- OGDF definition
@@ -114,6 +114,7 @@ dPoint =
   [ Constructor [ double "x", double "y" ] Nothing ]
   []
   []
+  False
 
 -- need to be defined with template
 dPolyline :: Class
@@ -125,7 +126,7 @@ dPolyline =
   ]
   []
   []
-
+  False
 
 edgeElement :: Class
 edgeElement =
@@ -138,8 +139,7 @@ edgeElement =
   ]
   []
   []
-
-
+  False
 
 graph :: Class
 graph =
@@ -155,7 +155,7 @@ graph =
   ]
   []
   []
-
+  False
 
 graphAttributes :: Class
 graphAttributes =
@@ -171,6 +171,7 @@ graphAttributes =
   ]
   []
   []
+  False
 
 graphIO :: Class
 graphIO =
@@ -181,7 +182,7 @@ graphIO =
   ]
   []
   []
-
+  False
 
 hierarchyLayoutModule :: Class
 hierarchyLayoutModule =
@@ -189,7 +190,7 @@ hierarchyLayoutModule =
   []
   []
   []
-
+  False
 
 
 layerByLayerSweep :: Class
@@ -198,6 +199,7 @@ layerByLayerSweep =
   []
   []
   []
+  False
 
 layeredCrossMinModule :: Class
 layeredCrossMinModule =
@@ -205,6 +207,7 @@ layeredCrossMinModule =
   []
   []
   []
+  False
 
 layoutModule :: Class
 layoutModule =
@@ -214,7 +217,6 @@ layoutModule =
   []
   []
 
-
 medianHeuristic :: Class
 medianHeuristic =
   Class cabal "MedianHeuristic" [ deletable, layerByLayerSweep ] mempty Nothing
@@ -222,7 +224,7 @@ medianHeuristic =
   ]
   []
   []
-
+  False
 
 nodeElement :: Class
 nodeElement =
@@ -236,6 +238,7 @@ nodeElement =
   ]
   []
   []
+  False
 
 optimalHierarchyLayout :: Class
 optimalHierarchyLayout =
@@ -247,6 +250,7 @@ optimalHierarchyLayout =
   ]
   []
   []
+  False
 
 optimalRanking :: Class
 optimalRanking =
@@ -255,6 +259,7 @@ optimalRanking =
   ]
   []
   []
+  False
 
 rankingModule :: Class
 rankingModule =
@@ -262,6 +267,7 @@ rankingModule =
   []
   []
   []
+  False
 
 sugiyamaLayout :: Class
 sugiyamaLayout =
@@ -273,6 +279,7 @@ sugiyamaLayout =
   ]
   []
   []
+  False
 
 
 classes = [ dPoint
