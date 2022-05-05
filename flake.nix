@@ -17,10 +17,7 @@
       ogdf = pkgs.callPackage ./ogdf { };
 
       finalHaskellOverlay = self: super:
-        (import ./default.nix {
-          inherit pkgs ogdf;
-          fficxxSrc = fficxx;
-        } self super);
+        (import ./default.nix { inherit pkgs ogdf; } self super);
 
       newHaskellPackages = pkgs.haskellPackages.extend finalHaskellOverlay;
 
