@@ -16,6 +16,6 @@ in self: super:
       libraryHaskellDepends =
         [ base fficxx fficxx-runtime template-haskell stdcxx ];
       librarySystemDepends = [ ogdf ];
-      license = stdenv.lib.licenses.bsd3;
+      license = pkgs.lib.licenses.bsd3;
     }) { inherit ogdf; };
 }
