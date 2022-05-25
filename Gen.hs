@@ -94,7 +94,7 @@ cabal = Cabal {
   , cabal_additional_c_incs  = []
   , cabal_additional_c_srcs  = []
   , cabal_additional_pkgdeps = [ CabalName "stdcxx" ]
-  , cabal_license            = Just "BSD3"
+  , cabal_license            = Just "BSD-3-Clause"
   , cabal_licensefile        = Just "LICENSE"
   , cabal_extraincludedirs   = [ ]
   , cabal_extralibdirs       = []
@@ -339,6 +339,7 @@ main = do
                , sbcTopLevels  = toplevelfunctions
                , sbcTemplates  = templates
                , sbcExtraLibs  = extraLib
+               , sbcCxxOpts = ["-std=c++17"]
                , sbcExtraDeps  = extraDep
                , sbcStaticFiles = ["LICENSE"]
                }
