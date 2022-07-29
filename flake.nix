@@ -1,19 +1,25 @@
 {
   description = "OGDF";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
+    # nixpkgs/master on 2022-07-18
+    nixpkgs.url = "github:NixOS/nixpkgs/31997025a4d59f09a9b4c55a3c6ff5ade48de2d6";
     flake-utils.url = "github:numtide/flake-utils";
     fficxx = {
-      url = "github:wavewave/fficxx/master";
+      url = "github:wavewave/fficxx/aarch64-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
     };
   };
   outputs = { self, nixpkgs, flake-utils, fficxx }:
     flake-utils.lib.eachDefaultSystem (system:
       let
+        overlayGHC = final: prev: {
+          haskellPackages = prev.haskell.packages.ghc923;
+        };
         pkgs = import nixpkgs {
-          overlays = [ fficxx.overlay ];
+          overlays = [ overlayGHC (fficxx.overlay.${system}) ];
           inherit system;
+          config.allowBroken = true;
         };
 
         ogdf = pkgs.callPackage ./ogdf { };
@@ -44,7 +50,7 @@
 
         devShell = with pkgs;
           let
-            hsenv = haskellPackages.ghcWithPackages (p: [
+            hsenv = haskell.packages.ghc923.ghcWithPackages (p: [
               p.cabal-install
               p.fficxx
               p.fficxx-runtime
