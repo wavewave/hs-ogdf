@@ -50,7 +50,7 @@
 
         devShell = with pkgs;
           let
-            hsenv = haskell.packages.ghc923.ghcWithPackages (p: [
+            hsenv = haskellPackages.ghcWithPackages (p: [
               p.cabal-install
               p.fficxx
               p.fficxx-runtime
