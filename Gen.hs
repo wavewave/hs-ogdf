@@ -176,9 +176,9 @@ graphAttributes =
 graphIO :: Class
 graphIO =
   Class cabal "GraphIO" [ deletable ] mempty Nothing
-  [ Static bool_ "readGML" [ cppclassref graphAttributes "ga", cppclassref graph "g", cppclassref string "filename" ] Nothing
-  , Static bool_ "writeGML" [ cppclassref graphAttributes "ga", cppclassref string "filename" ] Nothing
-  , Static bool_ "drawSVG" [ cppclassref graphAttributes "ga", cppclassref string "filename" ] Nothing
+  [ -- Static bool_ "readGML" [ cppclassref graphAttributes "ga", cppclassref graph "g", cppclassref string "filename" ] Nothing
+  -- , Static bool_ "writeGML" [ cppclassref graphAttributes "ga", cppclassref string "filename" ] Nothing
+    Static bool_ "drawSVG" [ cppclassref graphAttributes "ga", cppclassref string "filename" ] Nothing
   ]
   []
   []
@@ -306,15 +306,15 @@ headers =
   , modImports "Graph"           ["ogdf"] ["ogdf/basic/Graph_d.h" ]
   , modImports "GraphAttributes" ["ogdf"] ["ogdf/basic/GraphAttributes.h"]
   , modImports "GraphIO"         ["ogdf"] ["ogdf/fileformats/GraphIO.h"]
-  , modImports "HierarchyLayoutModule" ["ogdf"] ["ogdf/module/HierarchyLayoutModule.h"]
-  , modImports "LayerByLayerSweep" ["ogdf"] ["ogdf/module/LayerByLayerSweep.h"]
-  , modImports "LayeredCrossMinModule" ["ogdf"] ["ogdf/module/LayeredCrossMinModule.h"]
-  , modImports "LayoutModule"    ["ogdf"] ["ogdf/module/LayoutModule.h"]
+  , modImports "HierarchyLayoutModule" ["ogdf"] ["ogdf/layered/HierarchyLayoutModule.h"]
+  , modImports "LayerByLayerSweep" ["ogdf"] ["ogdf/layered/LayerByLayerSweep.h"]
+  , modImports "LayeredCrossMinModule" ["ogdf"] ["ogdf/layered/LayeredCrossMinModule.h"]
+  , modImports "LayoutModule"    ["ogdf"] ["ogdf/basic/LayoutModule.h"]
   , modImports "MedianHeuristic" ["ogdf"] ["ogdf/layered/MedianHeuristic.h"]
   , modImports "NodeElement"     ["ogdf"] ["ogdf/basic/Graph_d.h" ]
   , modImports "OptimalHierarchyLayout" ["ogdf"] ["ogdf/layered/OptimalHierarchyLayout.h"]
   , modImports "OptimalRanking"  ["ogdf"] ["ogdf/layered/OptimalRanking.h"]
-  , modImports "RankingModule"   ["ogdf"] ["ogdf/module/RankingModule.h"]
+  , modImports "RankingModule"   ["ogdf"] ["ogdf/layered/RankingModule.h"]
   , modImports "SugiyamaLayout"  ["ogdf"] ["ogdf/layered/SugiyamaLayout.h"]
   ]
 
