@@ -176,9 +176,9 @@ graphAttributes =
 graphIO :: Class
 graphIO =
   Class cabal "GraphIO" [ deletable ] mempty Nothing
-  [ -- Static bool_ "readGML" [ cppclassref graphAttributes "ga", cppclassref graph "g", cppclassref string "filename" ] Nothing
-  -- , Static bool_ "writeGML" [ cppclassref graphAttributes "ga", cppclassref string "filename" ] Nothing
-    Static bool_ "drawSVG" [ cppclassref graphAttributes "ga", cppclassref string "filename" ] Nothing
+  [ Static bool_ "read" [ cppclassref graphAttributes "ga", cppclassref graph "g", cppclassref string "filename" ] Nothing
+  , Static bool_ "write" [ cppclassref graphAttributes "ga", cppclassref string "filename" ] Nothing
+  , Static bool_ "drawSVG" [ cppclassref graphAttributes "ga", cppclassref string "filename" ] Nothing
   ]
   []
   []

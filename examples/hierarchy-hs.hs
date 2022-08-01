@@ -47,7 +47,7 @@ main = do
 
   cstr <- newCString "unix-history.gml"
   str <- newCppString cstr
-  b <- graphIO_readGML ga g str
+  b <- graphIO_read ga g str
 
   if (b == 0)
     then hPutStrLn stderr "Could not load unix-history.gml"
@@ -74,7 +74,7 @@ main = do
       putStrLn "SL.call(GA)"
       cstrout <- newCString "unix-history-layout.gml"
       strout <- newCppString cstrout
-      graphIO_writeGML ga strout
+      graphIO_write ga strout
       delete strout
       delete sl
       pure ()

@@ -73,7 +73,7 @@ main = do
 
   withCString "manual_graph.gml" $ \cstr -> do
     str <- newCppString cstr
-    graphIO_writeGML ga str
+    graphIO_write ga str
     delete str
 
   delete ga
