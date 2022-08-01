@@ -76,6 +76,11 @@ main = do
     graphIO_write ga str
     delete str
 
+  withCString "manual_graph.svg" $ \cstr -> do
+    str <- newCppString cstr
+    graphIO_drawSVG ga str
+    delete str
+
   delete ga
   delete g
   pure ()

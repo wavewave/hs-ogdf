@@ -1,7 +1,9 @@
 module Main where
 
+import Control.Exception (bracket)
+import Control.Monad (void)
 import Data.Bits ((.|.))
-import Foreign.C.String (newCString)
+import Foreign.C.String (withCString)
 import System.IO (hPutStrLn,stderr)
 
 import STD.CppString
@@ -33,52 +35,40 @@ nodeWeight       = 0x004000
 threeD           = 0x010000
 
 
+newGA :: Graph -> IO GraphAttributes
+newGA g = newGraphAttributes g (   nodeGraphics
+                                 .|. edgeGraphics
+                                 .|. nodeLabel
+                                 .|. edgeStyle
+                                 .|. nodeStyle
+                                 .|. nodeTemplate )
 main :: IO ()
 main = do
-  g <- newGraph
-  putStrLn "g created"
-  ga <- newGraphAttributes g (   nodeGraphics
-                             .|. edgeGraphics
-                             .|. nodeLabel
-                             .|. edgeStyle
-                             .|. nodeStyle
-                             .|. nodeTemplate )
-  putStrLn "ga created"
-
-  cstr <- newCString "unix-history.gml"
-  str <- newCppString cstr
-  b <- graphIO_read ga g str
-
-  if (b == 0)
-    then hPutStrLn stderr "Could not load unix-history.gml"
-    else do
-      sl <- newSugiyamaLayout
-      putStrLn "sl created"
-      or <- newOptimalRanking
-      putStrLn "or created"
-      sugiyamaLayout_setRanking sl or
-      putStrLn "setRanking done"
-      mh <- newMedianHeuristic
-      putStrLn "mh created"
-      sugiyamaLayout_setCrossMin sl mh
-      putStrLn "setCrossMin"
-
-      ohl <- newOptimalHierarchyLayout
-      putStrLn "ohl created"
-      optimalHierarchyLayout_layerDistance ohl 30.0
-      optimalHierarchyLayout_nodeDistance ohl 25.0
-      optimalHierarchyLayout_weightBalancing ohl 0.8
-      sugiyamaLayout_setLayout sl ohl
-      putStrLn "setLayout ohl"
-      call sl ga
-      putStrLn "SL.call(GA)"
-      cstrout <- newCString "unix-history-layout.gml"
-      strout <- newCppString cstrout
-      graphIO_write ga strout
-      delete strout
-      delete sl
-      pure ()
-
-  delete g
-  delete ga
-  delete str
+  bracket newGraph delete $ \g ->
+    bracket (newGA g) delete $ \ga -> do
+      withCString "unix-history.gml" $ \inputFileNameCstr ->
+        bracket (newCppString inputFileNameCstr) delete $ \inputFileName -> do
+          b <- graphIO_read ga g inputFileName
+          if (b == 0)
+            then hPutStrLn stderr "Could not load unix-history.gml"
+            else
+              bracket newSugiyamaLayout delete $ \sl -> do
+                or <- newOptimalRanking
+                sugiyamaLayout_setRanking sl or
+                mh <- newMedianHeuristic
+                sugiyamaLayout_setCrossMin sl mh
+                ohl <- newOptimalHierarchyLayout
+                optimalHierarchyLayout_layerDistance ohl 30.0
+                optimalHierarchyLayout_nodeDistance ohl 25.0
+                optimalHierarchyLayout_weightBalancing ohl 0.8
+                sugiyamaLayout_setLayout sl ohl
+                call sl ga
+                -- GML generation
+                withCString "unix-history-layout.gml" $ \outputGMLFileNameCstr ->
+                  bracket (newCppString outputGMLFileNameCstr) delete $ \outputGMLFileName ->
+                    graphIO_write ga outputGMLFileName
+                -- SVG generation
+                withCString "unix-history-layout.svg" $ \outputSVGFileNameCstr ->
+                  bracket (newCppString outputSVGFileNameCstr) delete $ \outputSVGFileName ->
+                    graphIO_drawSVG ga outputSVGFileName
+                pure ()
