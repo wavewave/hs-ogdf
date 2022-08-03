@@ -2,7 +2,8 @@
   description = "OGDF";
   inputs = {
     # nixpkgs/master on 2022-07-18
-    nixpkgs.url = "github:NixOS/nixpkgs/31997025a4d59f09a9b4c55a3c6ff5ade48de2d6";
+    nixpkgs.url =
+      "github:NixOS/nixpkgs/31997025a4d59f09a9b4c55a3c6ff5ade48de2d6";
     flake-utils.url = "github:numtide/flake-utils";
     fficxx = {
       url = "github:wavewave/fficxx/aarch64-darwin";
@@ -43,7 +44,8 @@
         overlay = final: prev: {
           ogdf = final.callPackage ./ogdf { };
           haskellPackages = prev.haskellPackages.override (old: {
-            overrides = final.lib.composeExtensions (old.overrides or (_: _: { }))
+            overrides =
+              final.lib.composeExtensions (old.overrides or (_: _: { }))
               finalHaskellOverlay;
           });
         };
@@ -54,14 +56,14 @@
               p.cabal-install
               p.fficxx
               p.fficxx-runtime
+              p.ormolu
               p.stdcxx
               p.formatting
               p.monad-loops
             ]);
           in mkShell {
-            buildInputs = [ hsenv ogdf pkgconfig ];
+            buildInputs = [ hsenv ogdf pkgconfig nixfmt ];
             shellHook = "";
           };
-      }
-  );
+      });
 }
