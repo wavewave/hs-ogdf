@@ -6,7 +6,8 @@ import qualified Data.HashMap.Strict as HM
 --
 import FFICXX.Generate.Builder (simpleBuilder)
 import FFICXX.Generate.Code.Primitive
-  ( bool_,
+  ( bool,
+    bool_,
     charpp,
     cppclass,
     cppclass_,
@@ -168,6 +169,25 @@ edgeElement =
       NonVirtual (cppclass_ nodeElement) "target" [] Nothing,
       NonVirtual self_ "succ" [] Nothing,
       NonVirtual self_ "pred" [] Nothing
+    ]
+    []
+    []
+    False
+
+fastSimpleHierarchyLayout :: Class
+fastSimpleHierarchyLayout =
+  Class
+    cabal
+    "FastSimpleHierarchyLayout"
+    [deletable, hierarchyLayoutModule]
+    mempty
+    Nothing
+    [ Constructor [] Nothing,
+      NonVirtual void_ "layerDistance" [double "x"] Nothing,
+      NonVirtual void_ "nodeDistance" [double "x"] Nothing,
+      NonVirtual void_ "downward" [bool "d"] Nothing,
+      NonVirtual void_ "leftToRight" [bool "b"] Nothing,
+      NonVirtual void_ "balanced" [bool "b"] Nothing
     ]
     []
     []
@@ -384,6 +404,7 @@ classes =
     graph,
     graphAttributes,
     graphIO,
+    fastSimpleHierarchyLayout,
     hierarchyLayoutModule,
     layerByLayerSweep,
     layeredCrossMinModule,
@@ -404,6 +425,7 @@ headers =
   [ modImports "DPoint" ["ogdf"] ["ogdf/basic/geometry.h"],
     modImports "DPolyline" ["ogdf"] ["ogdf/basic/geometry.h"],
     modImports "EdgeElement" ["ogdf"] ["ogdf/basic/Graph_d.h"],
+    modImports "FastSimpleHierarchyLayout" ["ogdf"] ["ogdf/layered/FastSimpleHierarchyLayout.h"],
     modImports "Graph" ["ogdf"] ["ogdf/basic/Graph_d.h"],
     modImports "GraphAttributes" ["ogdf"] ["ogdf/basic/GraphAttributes.h"],
     modImports "GraphIO" ["ogdf"] ["ogdf/fileformats/GraphIO.h"],
