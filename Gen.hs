@@ -193,6 +193,24 @@ fastSimpleHierarchyLayout =
     []
     False
 
+fMMMLayout :: Class
+fMMMLayout =
+  Class
+    cabal
+    "FMMMLayout"
+    [deletable, layoutModule]
+    mempty
+    Nothing
+    [ Constructor [] Nothing,
+      NonVirtual void_ "useHighLevelOptions" [bool "uho"] Nothing,
+      NonVirtual void_ "unitEdgeLength" [double "x"] Nothing,
+      NonVirtual void_ "newInitialPlacement" [bool "nip"] Nothing
+      -- NonVirtual void_ "qualityVersusSpeed" [int "qvs"] Nothing -- qvs is FMMMOptions::QualityVsSpeed
+    ]
+    []
+    []
+    False
+
 graph :: Class
 graph =
   Class
@@ -405,6 +423,7 @@ classes =
     graphAttributes,
     graphIO,
     fastSimpleHierarchyLayout,
+    fMMMLayout,
     hierarchyLayoutModule,
     layerByLayerSweep,
     layeredCrossMinModule,
@@ -426,6 +445,7 @@ headers =
     modImports "DPolyline" ["ogdf"] ["ogdf/basic/geometry.h"],
     modImports "EdgeElement" ["ogdf"] ["ogdf/basic/Graph_d.h"],
     modImports "FastSimpleHierarchyLayout" ["ogdf"] ["ogdf/layered/FastSimpleHierarchyLayout.h"],
+    modImports "FMMMLayout" ["ogdf"] ["ogdf/energybased/FMMMLayout.h"],
     modImports "Graph" ["ogdf"] ["ogdf/basic/Graph_d.h"],
     modImports "GraphAttributes" ["ogdf"] ["ogdf/basic/GraphAttributes.h"],
     modImports "GraphIO" ["ogdf"] ["ogdf/fileformats/GraphIO.h"],
