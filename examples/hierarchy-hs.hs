@@ -54,6 +54,7 @@ main = do
             else
               bracket newSugiyamaLayout delete $ \sl -> do
                 or <- newOptimalRanking
+                sugiyamaLayout_pageRatio sl 2.0
                 sugiyamaLayout_setRanking sl or
                 mh <- newMedianHeuristic
                 sugiyamaLayout_setCrossMin sl mh

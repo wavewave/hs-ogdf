@@ -247,7 +247,9 @@ graphAttributes =
       NonVirtual (ref_ CTDouble) "height" [cppclass nodeElement "v"] Nothing,
       NonVirtual (cppclassref_ dPolyline) "bends" [cppclass edgeElement "e"] Nothing,
       NonVirtual (cppclassref_ string) "label" [cppclass nodeElement "v"] Nothing,
-      NonVirtual (cppclassref_ string) "label" [cppclass edgeElement "e"] (Just "graphAttributeslabelE")
+      NonVirtual (cppclassref_ string) "label" [cppclass edgeElement "e"] (Just "graphAttributeslabelE"),
+      NonVirtual (ref_ CTDouble) "xLabel" [cppclass nodeElement "v"] Nothing,
+      NonVirtual (ref_ CTDouble) "yLabel" [cppclass nodeElement "v"] Nothing
     ]
     []
     []
@@ -407,6 +409,7 @@ sugiyamaLayout =
     mempty
     Nothing
     [ Constructor [] Nothing,
+      NonVirtual void_ "pageRatio" [double "x"] Nothing,
       NonVirtual void_ "setCrossMin" [cppclass layeredCrossMinModule "pCrossMin"] Nothing,
       NonVirtual void_ "setLayout" [cppclass hierarchyLayoutModule "pLayout"] Nothing,
       NonVirtual void_ "setRanking" [cppclass rankingModule "pRanking"] Nothing
