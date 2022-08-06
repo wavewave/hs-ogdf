@@ -127,6 +127,21 @@ extraLib = ["OGDF", "COIN"]
 
 extraDep = []
 
+color :: Class
+color =
+  Class
+    cabal
+    "Color"
+    [deletable]
+    mempty
+    Nothing
+    [ Constructor [cppclassref string "str"] Nothing,
+      NonVirtual bool_ "fromString" [cppclassref string "str"] Nothing
+    ]
+    []
+    []
+    False
+
 dPoint :: Class
 dPoint =
   Class
@@ -241,6 +256,8 @@ graphAttributes =
     mempty
     Nothing
     [ Constructor [cppclassref graph "g", long "initAttributes"] Nothing,
+      NonVirtual (cppclassref_ color) "fillColor" [cppclass nodeElement "v"] Nothing,
+      NonVirtual (cppclassref_ color) "fillBgColor" [cppclass nodeElement "v"] Nothing,
       NonVirtual (ref_ CTDouble) "x" [cppclass nodeElement "v"] Nothing,
       NonVirtual (ref_ CTDouble) "y" [cppclass nodeElement "v"] Nothing,
       NonVirtual (ref_ CTDouble) "width" [cppclass nodeElement "v"] Nothing,
@@ -419,7 +436,8 @@ sugiyamaLayout =
     False
 
 classes =
-  [ dPoint,
+  [ color,
+    dPoint,
     dPolyline,
     edgeElement,
     graph,
@@ -444,7 +462,8 @@ toplevelfunctions = []
 templates = []
 
 headers =
-  [ modImports "DPoint" ["ogdf"] ["ogdf/basic/geometry.h"],
+  [ modImports "Color" ["ogdf"] ["ogdf/basic/graphics.h"],
+    modImports "DPoint" ["ogdf"] ["ogdf/basic/geometry.h"],
     modImports "DPolyline" ["ogdf"] ["ogdf/basic/geometry.h"],
     modImports "EdgeElement" ["ogdf"] ["ogdf/basic/Graph_d.h"],
     modImports "FastSimpleHierarchyLayout" ["ogdf"] ["ogdf/layered/FastSimpleHierarchyLayout.h"],
