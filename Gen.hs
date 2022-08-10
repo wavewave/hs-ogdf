@@ -13,6 +13,7 @@ import FFICXX.Generate.Code.Primitive
     cppclass_,
     cppclassref,
     cppclassref_,
+    cppclasscopy_,
     cstring,
     cstring_,
     double,
@@ -171,6 +172,22 @@ dPolyline =
     []
     False
 
+-- need for redefining this with template
+dRect :: Class
+dRect =
+  Class
+    cabal
+    "DRect"
+    [deletable]
+    mempty
+    Nothing
+    [ NonVirtual double_ "height" [] Nothing,
+      NonVirtual double_ "width" [] Nothing
+    ]
+    []
+    []
+    False
+
 edgeElement :: Class
 edgeElement =
   Class
@@ -266,7 +283,8 @@ graphAttributes =
       NonVirtual (cppclassref_ string) "label" [cppclass nodeElement "v"] Nothing,
       NonVirtual (cppclassref_ string) "label" [cppclass edgeElement "e"] (Just "graphAttributeslabelE"),
       NonVirtual (ref_ CTDouble) "xLabel" [cppclass nodeElement "v"] Nothing,
-      NonVirtual (ref_ CTDouble) "yLabel" [cppclass nodeElement "v"] Nothing
+      NonVirtual (ref_ CTDouble) "yLabel" [cppclass nodeElement "v"] Nothing,
+      Virtual (cppclasscopy_ dRect) "boundingBox" [] Nothing
     ]
     []
     []
@@ -439,6 +457,7 @@ classes =
   [ color,
     dPoint,
     dPolyline,
+    dRect,
     edgeElement,
     graph,
     graphAttributes,
@@ -465,6 +484,7 @@ headers =
   [ modImports "Color" ["ogdf"] ["ogdf/basic/graphics.h"],
     modImports "DPoint" ["ogdf"] ["ogdf/basic/geometry.h"],
     modImports "DPolyline" ["ogdf"] ["ogdf/basic/geometry.h"],
+    modImports "DRect" ["ogdf"] ["ogdf/basic/geometry.h"],
     modImports "EdgeElement" ["ogdf"] ["ogdf/basic/Graph_d.h"],
     modImports "FastSimpleHierarchyLayout" ["ogdf"] ["ogdf/layered/FastSimpleHierarchyLayout.h"],
     modImports "FMMMLayout" ["ogdf"] ["ogdf/energybased/FMMMLayout.h"],
