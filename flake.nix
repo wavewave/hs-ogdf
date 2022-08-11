@@ -54,6 +54,7 @@
           let
             hsenv = haskellPackages.ghcWithPackages (p: [
               p.cabal-install
+              p.extra
               p.fficxx
               p.fficxx-runtime
               p.ormolu

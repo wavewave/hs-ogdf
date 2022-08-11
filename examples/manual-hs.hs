@@ -1,8 +1,11 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TemplateHaskell #-}
 module Main where
 
 import Data.Bits ((.|.))
 import Data.Foldable (forM_)
+import FFICXX.Runtime.TH (IsCPrimitive (..), TemplateParamInfo (..))
 import Foreign.C.String (withCString)
 import Foreign.C.Types
 import Foreign.Ptr
@@ -11,12 +14,24 @@ import Foreign.Storable
 import STD.CppString
 import STD.Deletable
 import OGDF.DPoint
-import OGDF.DPolyline
 import OGDF.EdgeElement
 import OGDF.Graph
 import OGDF.GraphAttributes
 import OGDF.GraphIO
+import qualified OGDF.List.TH as TH
+import OGDF.List.Template
 import OGDF.NodeElement
+
+TH.genListInstanceFor
+  NonCPrim
+  ( [t|DPoint|],
+    TPInfo
+      { tpinfoCxxType = "DPoint",
+        tpinfoCxxHeaders = ["ogdf/basic/geometry.h", "OGDFType.h"],
+        tpinfoCxxNamespaces = ["ogdf"],
+        tpinfoSuffix = "DPoint"
+      }
+  )
 
 nodeGraphics     = 0x000001
 edgeGraphics     = 0x000002
@@ -33,7 +48,7 @@ nodeStyle        = 0x000800
 nodeTemplate     = 0x001000
 edgeSubGraphs    = 0x002000
 nodeWeight       = 0x004000
-threeD           = 0x010000
+threeD           = 0x008000
 
 len = 11
 
@@ -67,8 +82,8 @@ main = do
     poly <- graphAttributes_bends ga e
     pt1 <- newDPoint 10 (fromIntegral (-20*i))
     pt2 <- newDPoint (fromIntegral (20*(len-i))) (-10)
-    dPolyline_pushBack poly pt1
-    dPolyline_pushBack poly pt2
+    pushBack poly pt1
+    pushBack poly pt2
 
 
   withCString "manual_graph.gml" $ \cstr -> do

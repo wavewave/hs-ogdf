@@ -2,17 +2,22 @@ module Main where
 
 import Control.Exception (bracket)
 import Control.Monad (void)
+import Control.Monad.Extra (loopM)
 import Data.Bits ((.|.))
 import Foreign.C.String (withCString)
+import Foreign.Ptr (nullPtr)
+import Foreign.Storable (peek)
 import System.IO (hPutStrLn,stderr)
 
 import STD.CppString
 import STD.Deletable (delete)
+import OGDF.EdgeElement
 import OGDF.Graph
 import OGDF.GraphAttributes
 import OGDF.GraphIO
 import OGDF.LayoutModule
 import OGDF.MedianHeuristic
+import OGDF.NodeElement
 import OGDF.OptimalHierarchyLayout
 import OGDF.OptimalRanking
 import OGDF.SugiyamaLayout
@@ -32,7 +37,7 @@ nodeStyle        = 0x000800
 nodeTemplate     = 0x001000
 edgeSubGraphs    = 0x002000
 nodeWeight       = 0x004000
-threeD           = 0x010000
+threeD           = 0x008000
 
 
 newGA :: Graph -> IO GraphAttributes
@@ -72,4 +77,31 @@ main = do
                 withCString "unix-history-layout.svg" $ \outputSVGFileNameCstr ->
                   bracket (newCppString outputSVGFileNameCstr) delete $ \outputSVGFileName ->
                     graphIO_drawSVG ga outputSVGFileName
+                -- extracting node coordinates
+                putStrLn "#### Node layout information ####"
+                n0@(NodeElement _) <- graph_firstNode g
+                flip loopM n0 $ \n@(NodeElement nPtr) ->
+                  if nPtr == nullPtr
+                    then pure (Right ())
+                    else do
+                      j :: Int <- fromIntegral <$> nodeElement_index n
+                      x :: Double <- realToFrac <$> (peek =<< graphAttributes_x ga n)
+                      y :: Double <- realToFrac <$> (peek =<< graphAttributes_y ga n)
+                      w :: Double <- realToFrac <$> (peek =<< graphAttributes_width ga n)
+                      h :: Double <- realToFrac <$> (peek =<< graphAttributes_height ga n)
+                      print (j, x, y, w, h)
+                      Left <$> nodeElement_succ n
+                -- extracting edge information
+                putStrLn "#### Edge layout information ####"
+                e0@(EdgeElement _) <- graph_firstEdge g
+                flip loopM e0 $ \e@(EdgeElement ePtr) ->
+                  if ePtr == nullPtr
+                    then pure (Right ())
+                    else do
+                      j :: Int <- fromIntegral <$> edgeElement_index e
+                      dpline <- graphAttributes_bends ga e
+                      -- dpline <- graphAtributes_bends
+                      print j
+                      Left <$> edgeElement_succ e
+
                 pure ()

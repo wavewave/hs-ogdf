@@ -34,12 +34,19 @@ import FFICXX.Generate.Config
   )
 import FFICXX.Generate.Type.Cabal (BuildType (..), Cabal (..), CabalName (..))
 import FFICXX.Generate.Type.Class
-  ( CTypes (CTDouble),
+  ( Arg (..),
+    CTypes (CTDouble),
     Class (..),
     ClassAlias (..),
+    Form (..),
     Function (..),
     ProtectedMethod (..),
+    TemplateAppInfo (..),
+    TemplateArgType (..),
+    TemplateClass (..),
+    TemplateFunction (..),
     TopLevel (..),
+    Types (TemplateAppRef, TemplateParam),
     Variable (..),
   )
 import FFICXX.Generate.Type.Config
@@ -48,6 +55,7 @@ import FFICXX.Generate.Type.Config
     ModuleUnitMap (..),
     modImports,
   )
+import FFICXX.Generate.Type.Module (TemplateClassImportHeader (..))
 import System.Directory (getCurrentDirectory)
 import System.Environment (getArgs)
 import System.FilePath ((</>))
@@ -128,6 +136,83 @@ extraLib = ["OGDF", "COIN"]
 
 extraDep = []
 
+--
+-- template classes
+--
+
+t_List :: TemplateClass
+t_List =
+  TmplCls
+    cabal
+    "List"
+    (FormSimple "ogdf::List")
+    ["tp1"]
+    [ TFun void_ "pushBack" "pushBack" [Arg (TemplateParam "tp1") "x"]
+    ]
+    []
+
+
+      {- TFunNew [] Nothing,
+
+      TFun
+        ( TemplateAppRef
+            TemplateAppInfo
+              { tapp_tclass = t_vector_iterator,
+                tapp_tparams = [TArg_TypeParam "tp1"],
+                tapp_CppTypeForParam = "std::vector<tp1>::iterator"
+              }
+        )
+        "begin"
+        "begin"
+        [],
+      TFun
+        ( TemplateAppRef
+            TemplateAppInfo
+              { tapp_tclass = t_vector_iterator,
+                tapp_tparams = [TArg_TypeParam "tp1"],
+                tapp_CppTypeForParam = "std::vector<tp1>::iterator"
+              }
+        )
+        "end"
+        "end"
+        [],
+      TFun void_ "pop_back" "pop_back" [],
+      TFun (TemplateParam "tp1") "at" "at" [int "n"],
+      TFun int_ "size" "size" [],
+
+      TFunDelete -}
+
+t_ListIterator :: TemplateClass
+t_ListIterator =
+  TmplCls
+    cabal
+    "ListIterator"
+    (FormSimple "ListIterator")
+    ["tp1"]
+    [ {- TFunOp
+        { tfun_ret = TemplateParam "tp1",
+          tfun_name = "deRef",
+          tfun_opexp = OpStar
+        },
+      TFunOp
+        { tfun_ret -- TODO: this should be handled with self
+          =
+            TemplateApp
+              TemplateAppInfo
+                { tapp_tclass = t_vector_iterator,
+                  tapp_tparams = [TArg_TypeParam "tp1"],
+                  tapp_CppTypeForParam = "std::vector<tp1>::iterator"
+                },
+          tfun_name = "increment",
+          tfun_opexp = OpFPPlus
+        } -}
+    ]
+    []
+
+--
+-- ordinary classes
+--
+
 color :: Class
 color =
   Class
@@ -157,6 +242,7 @@ dPoint =
     False
 
 -- need to be defined with template
+{-
 dPolyline :: Class
 dPolyline =
   Class
@@ -171,6 +257,7 @@ dPolyline =
     []
     []
     False
+-}
 
 -- need for redefining this with template
 dRect :: Class
@@ -266,29 +353,36 @@ graph =
 
 graphAttributes :: Class
 graphAttributes =
-  Class
-    cabal
-    "GraphAttributes"
-    [deletable]
-    mempty
-    Nothing
-    [ Constructor [cppclassref graph "g", long "initAttributes"] Nothing,
-      NonVirtual (cppclassref_ color) "fillColor" [cppclass nodeElement "v"] Nothing,
-      NonVirtual (cppclassref_ color) "fillBgColor" [cppclass nodeElement "v"] Nothing,
-      NonVirtual (ref_ CTDouble) "x" [cppclass nodeElement "v"] Nothing,
-      NonVirtual (ref_ CTDouble) "y" [cppclass nodeElement "v"] Nothing,
-      NonVirtual (ref_ CTDouble) "width" [cppclass nodeElement "v"] Nothing,
-      NonVirtual (ref_ CTDouble) "height" [cppclass nodeElement "v"] Nothing,
-      NonVirtual (cppclassref_ dPolyline) "bends" [cppclass edgeElement "e"] Nothing,
-      NonVirtual (cppclassref_ string) "label" [cppclass nodeElement "v"] Nothing,
-      NonVirtual (cppclassref_ string) "label" [cppclass edgeElement "e"] (Just "graphAttributeslabelE"),
-      NonVirtual (ref_ CTDouble) "xLabel" [cppclass nodeElement "v"] Nothing,
-      NonVirtual (ref_ CTDouble) "yLabel" [cppclass nodeElement "v"] Nothing,
-      Virtual (cppclasscopy_ dRect) "boundingBox" [] Nothing
-    ]
-    []
-    []
-    False
+  let dPolylineRef_ = TemplateAppRef appinfo
+        where appinfo =
+                TemplateAppInfo
+                  { tapp_tclass = t_List
+                  , tapp_tparams = [TArg_Class dPoint]
+                  , tapp_CppTypeForParam = "List<DPoint>"
+                  }
+  in Class
+       cabal
+       "GraphAttributes"
+       [deletable]
+       mempty
+       Nothing
+       [ Constructor [cppclassref graph "g", long "initAttributes"] Nothing,
+         NonVirtual (cppclassref_ color) "fillColor" [cppclass nodeElement "v"] Nothing,
+         NonVirtual (cppclassref_ color) "fillBgColor" [cppclass nodeElement "v"] Nothing,
+         NonVirtual (ref_ CTDouble) "x" [cppclass nodeElement "v"] Nothing,
+         NonVirtual (ref_ CTDouble) "y" [cppclass nodeElement "v"] Nothing,
+         NonVirtual (ref_ CTDouble) "width" [cppclass nodeElement "v"] Nothing,
+         NonVirtual (ref_ CTDouble) "height" [cppclass nodeElement "v"] Nothing,
+         NonVirtual dPolylineRef_ "bends" [cppclass edgeElement "e"] Nothing,
+         NonVirtual (cppclassref_ string) "label" [cppclass nodeElement "v"] Nothing,
+         NonVirtual (cppclassref_ string) "label" [cppclass edgeElement "e"] (Just "graphAttributeslabelE"),
+         NonVirtual (ref_ CTDouble) "xLabel" [cppclass nodeElement "v"] Nothing,
+         NonVirtual (ref_ CTDouble) "yLabel" [cppclass nodeElement "v"] Nothing,
+         Virtual (cppclasscopy_ dRect) "boundingBox" [] Nothing
+       ]
+       []
+       []
+       False
 
 graphIO :: Class
 graphIO =
@@ -456,7 +550,7 @@ sugiyamaLayout =
 classes =
   [ color,
     dPoint,
-    dPolyline,
+    -- dPolyline,
     dRect,
     edgeElement,
     graph,
@@ -478,7 +572,12 @@ classes =
 
 toplevelfunctions = []
 
-templates = []
+templates :: [TemplateClassImportHeader]
+templates =
+  [ TCIH t_List ["ogdf/basic/List.h"]
+   -- TCIH t_ListIterator ["ogdf/basic/List.h"],
+  ]
+
 
 headers =
   [ modImports "Color" ["ogdf"] ["ogdf/basic/graphics.h"],

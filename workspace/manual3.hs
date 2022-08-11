@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Main where
 
@@ -30,6 +31,17 @@ import OGDF.SugiyamaLayout
 import STD.CppString
 import STD.Deletable
 
+TH.genListInstanceFor
+  NonCPrim
+  ( [t|DPoint|],
+    TPInfo
+      { tpinfoCxxType = "DPoint",
+        tpinfoCxxHeaders = ["ogdf/basic/geometry.h", "OGDFType.h"],
+        tpinfoCxxNamespaces = ["ogdf"],
+        tpinfoSuffix = "DPoint"
+      }
+  )
+
 nodeGraphics     = 0x000001
 edgeGraphics     = 0x000002
 edgeIntWeight    = 0x000004
@@ -45,7 +57,7 @@ nodeStyle        = 0x000800
 nodeTemplate     = 0x001000
 edgeSubGraphs    = 0x002000
 nodeWeight       = 0x004000
-threeD           = 0x010000
+threeD           = 0x008000
 
 len = 11
 
