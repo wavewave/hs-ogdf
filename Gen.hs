@@ -254,28 +254,11 @@ dPoint =
     mempty
     Nothing
     [Constructor [double "x", double "y"] Nothing]
-    [
+    [ Variable (double "m_x"),
+      Variable (double "m_y")
     ]
     []
     False
-
--- need to be defined with template
-{-
-dPolyline :: Class
-dPolyline =
-  Class
-    cabal
-    "DPolyline"
-    [deletable]
-    mempty
-    Nothing
-    [ -- this is incorrect. only for now.
-      NonVirtual void_ "pushBack" [cppclassref dPoint "x"] Nothing
-    ]
-    []
-    []
-    False
--}
 
 -- need for redefining this with template
 dRect :: Class

@@ -17,6 +17,7 @@ import System.IO (hPutStrLn,stderr)
 import STD.CppString
 import STD.Deletable (delete)
 import OGDF.DPoint
+import OGDF.DPoint.Implementation (dPoint_m_x_get, dPoint_m_y_get)
 import OGDF.EdgeElement
 import OGDF.Graph
 import OGDF.GraphAttributes
@@ -132,13 +133,16 @@ main = do
                     else do
                       j :: Int <- fromIntegral <$> edgeElement_index e
                       dpline <- graphAttributes_bends ga e
-                      -- dpline <- graphAtributes_bends
                       print j
                       it0 <- begin dpline
                       flip loopM (0, it0) $ \(i, it) -> do
                         ifM ((/= 0) <$> valid it)
                           ( do
                               putStrLn ("A" ++ show i)
+                              p <- deRef it
+                              x <- dPoint_m_x_get p
+                              y <- dPoint_m_y_get p
+                              print (x, y)
                               (Left . (i+1,) <$> listIteratorSucc it)
                           )
                           (print "B" >> pure (Right ()))
