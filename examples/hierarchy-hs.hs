@@ -1,26 +1,58 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
+
 module Main where
 
 import Control.Exception (bracket)
 import Control.Monad (void)
-import Control.Monad.Extra (loopM)
+import Control.Monad.Extra (ifM, loopM)
 import Data.Bits ((.|.))
+import FFICXX.Runtime.TH (IsCPrimitive (..), TemplateParamInfo (..))
 import Foreign.C.String (withCString)
+import Foreign.C.Types (CBool (..))
 import Foreign.Ptr (nullPtr)
 import Foreign.Storable (peek)
 import System.IO (hPutStrLn,stderr)
 
 import STD.CppString
 import STD.Deletable (delete)
+import OGDF.DPoint
 import OGDF.EdgeElement
 import OGDF.Graph
 import OGDF.GraphAttributes
 import OGDF.GraphIO
 import OGDF.LayoutModule
+import qualified OGDF.List.TH as TH
+import OGDF.List.Template
+import qualified OGDF.ListIterator.TH as TH
+import OGDF.ListIterator.Template
 import OGDF.MedianHeuristic
 import OGDF.NodeElement
 import OGDF.OptimalHierarchyLayout
 import OGDF.OptimalRanking
 import OGDF.SugiyamaLayout
+
+TH.genListInstanceFor
+  NonCPrim
+  ( [t|DPoint|],
+    TPInfo
+      { tpinfoCxxType = "DPoint",
+        tpinfoCxxHeaders = ["ogdf/basic/geometry.h", "OGDFType.h"],
+        tpinfoCxxNamespaces = ["ogdf"],
+        tpinfoSuffix = "DPoint"
+      }
+  )
+
+TH.genListIteratorInstanceFor
+  NonCPrim
+  ( [t|DPoint|],
+    TPInfo
+      { tpinfoCxxType = "DPoint",
+        tpinfoCxxHeaders = ["ogdf/basic/geometry.h", "OGDFType.h"],
+        tpinfoCxxNamespaces = ["ogdf"],
+        tpinfoSuffix = "DPoint"
+      }
+  )
 
 nodeGraphics     = 0x000001
 edgeGraphics     = 0x000002
@@ -102,6 +134,13 @@ main = do
                       dpline <- graphAttributes_bends ga e
                       -- dpline <- graphAtributes_bends
                       print j
+                      it0 <- begin dpline
+                      flip loopM (0, it0) $ \(i, it) -> do
+                        ifM ((/= 0) <$> valid it)
+                          ( do
+                              putStrLn ("A" ++ show i)
+                              (Left . (i+1,) <$> listIteratorSucc it)
+                          )
+                          (print "B" >> pure (Right ()))
                       Left <$> edgeElement_succ e
-
                 pure ()

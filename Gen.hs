@@ -40,13 +40,14 @@ import FFICXX.Generate.Type.Class
     ClassAlias (..),
     Form (..),
     Function (..),
+    OpExp (OpStar),
     ProtectedMethod (..),
     TemplateAppInfo (..),
     TemplateArgType (..),
     TemplateClass (..),
     TemplateFunction (..),
     TopLevel (..),
-    Types (TemplateAppRef, TemplateParam),
+    Types (TemplateApp, TemplateAppRef, TemplateParam),
     Variable (..),
   )
 import FFICXX.Generate.Type.Config
@@ -148,6 +149,30 @@ t_List =
     (FormSimple "ogdf::List")
     ["tp1"]
     [ TFun
+        (
+          TemplateApp
+            TemplateAppInfo
+              { tapp_tclass = t_ListIterator,
+                tapp_tparams = [TArg_TypeParam "tp1"],
+                tapp_CppTypeForParam = "ListIterator<tp1>"
+              }
+        )
+        "begin"
+        "begin"
+        [],
+      TFun
+        (
+          TemplateApp
+            TemplateAppInfo
+              { tapp_tclass = t_ListIterator,
+                tapp_tparams = [TArg_TypeParam "tp1"],
+                tapp_CppTypeForParam = "ListIterator<tp1>"
+              }
+        )
+        "end"
+        "end"
+        [],
+      TFun
         ( TemplateAppRef
             TemplateAppInfo
               { tapp_tclass = t_ListIterator,
@@ -168,7 +193,37 @@ t_ListIterator =
     "ListIterator"
     (FormSimple "ListIterator")
     ["tp1"]
-    []
+    [ TFunOp
+        { tfun_ret = TemplateParam "tp1",
+          tfun_name = "deRef",
+          tfun_opexp = OpStar
+        },
+      TFun
+        ( -- TODO: this should be handled with self
+          TemplateApp
+            TemplateAppInfo
+              { tapp_tclass = t_ListIterator,
+                tapp_tparams = [TArg_TypeParam "tp1"],
+                tapp_CppTypeForParam = "ListIterator<tp1>"
+              }
+        )
+        "listIteratorPred" -- to avoid conflict with Prelude.pred
+        "pred"
+        [],
+      TFun
+        ( -- TODO: this should be handled with self
+          TemplateApp
+            TemplateAppInfo
+              { tapp_tclass = t_ListIterator,
+                tapp_tparams = [TArg_TypeParam "tp1"],
+                tapp_CppTypeForParam = "ListIterator<tp1>"
+              }
+        )
+        "listIteratorSucc" -- to avoid conflict with Prelude.succ
+        "succ"
+        [],
+      TFun bool_ "valid" "valid" []
+    ]
     []
 
 --
@@ -199,7 +254,8 @@ dPoint =
     mempty
     Nothing
     [Constructor [double "x", double "y"] Nothing]
-    []
+    [
+    ]
     []
     False
 
