@@ -10,6 +10,7 @@ import Data.Bits ((.|.))
 import Data.Foldable (forM_)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
+import FFICXX.Runtime.TH (IsCPrimitive (..), TemplateParamInfo (..))
 import Foreign.C.String (withCString)
 import Foreign.C.Types
 import Foreign.Ptr
@@ -20,13 +21,13 @@ import qualified Formatting as F
 import STD.CppString
 import STD.Deletable
 import OGDF.DPoint
-import OGDF.DPolyline
 import OGDF.EdgeElement
 import OGDF.Graph
 import OGDF.GraphAttributes
 import OGDF.GraphIO
 import qualified OGDF.List.TH as TH
 import OGDF.List.Template
+import OGDF.ListIterator.Template
 import OGDF.NodeElement
 
 TH.genListInstanceFor
@@ -89,8 +90,8 @@ main = do
     poly <- graphAttributes_bends ga e
     pt1 <- newDPoint 10 (fromIntegral (-20*i))
     pt2 <- newDPoint (fromIntegral (20*(len-i))) (-10)
-    dPolyline_pushBack poly pt1
-    dPolyline_pushBack poly pt2
+    pushBack poly pt1
+    pushBack poly pt2
 
   n0@(NodeElement n0') <- graph_firstNode g
 

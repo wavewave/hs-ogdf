@@ -147,40 +147,19 @@ t_List =
     "List"
     (FormSimple "ogdf::List")
     ["tp1"]
-    [ TFun void_ "pushBack" "pushBack" [Arg (TemplateParam "tp1") "x"]
+    [ TFun
+        ( TemplateAppRef
+            TemplateAppInfo
+              { tapp_tclass = t_ListIterator,
+                tapp_tparams = [TArg_TypeParam "tp1"],
+                tapp_CppTypeForParam = "ListIterator<tp1>"
+              }
+        )
+        "pushBack"
+        "pushBack"
+        [Arg (TemplateParam "tp1") "x"]
     ]
     []
-
-
-      {- TFunNew [] Nothing,
-
-      TFun
-        ( TemplateAppRef
-            TemplateAppInfo
-              { tapp_tclass = t_vector_iterator,
-                tapp_tparams = [TArg_TypeParam "tp1"],
-                tapp_CppTypeForParam = "std::vector<tp1>::iterator"
-              }
-        )
-        "begin"
-        "begin"
-        [],
-      TFun
-        ( TemplateAppRef
-            TemplateAppInfo
-              { tapp_tclass = t_vector_iterator,
-                tapp_tparams = [TArg_TypeParam "tp1"],
-                tapp_CppTypeForParam = "std::vector<tp1>::iterator"
-              }
-        )
-        "end"
-        "end"
-        [],
-      TFun void_ "pop_back" "pop_back" [],
-      TFun (TemplateParam "tp1") "at" "at" [int "n"],
-      TFun int_ "size" "size" [],
-
-      TFunDelete -}
 
 t_ListIterator :: TemplateClass
 t_ListIterator =
@@ -189,24 +168,7 @@ t_ListIterator =
     "ListIterator"
     (FormSimple "ListIterator")
     ["tp1"]
-    [ {- TFunOp
-        { tfun_ret = TemplateParam "tp1",
-          tfun_name = "deRef",
-          tfun_opexp = OpStar
-        },
-      TFunOp
-        { tfun_ret -- TODO: this should be handled with self
-          =
-            TemplateApp
-              TemplateAppInfo
-                { tapp_tclass = t_vector_iterator,
-                  tapp_tparams = [TArg_TypeParam "tp1"],
-                  tapp_CppTypeForParam = "std::vector<tp1>::iterator"
-                },
-          tfun_name = "increment",
-          tfun_opexp = OpFPPlus
-        } -}
-    ]
+    []
     []
 
 --
@@ -575,7 +537,7 @@ toplevelfunctions = []
 templates :: [TemplateClassImportHeader]
 templates =
   [ TCIH t_List ["ogdf/basic/List.h"]
-   -- TCIH t_ListIterator ["ogdf/basic/List.h"],
+  , TCIH t_ListIterator ["ogdf/basic/List.h"]
   ]
 
 

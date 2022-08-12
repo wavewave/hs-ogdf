@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TemplateHaskell #-}
 
 module Main where
 
@@ -17,7 +16,6 @@ import Foreign.Storable
 import Formatting ((%),(%.))
 import qualified Formatting as F
 import OGDF.DPoint
-import OGDF.DPolyline
 import OGDF.EdgeElement
 import OGDF.Graph
 import OGDF.GraphAttributes
@@ -30,17 +28,6 @@ import OGDF.OptimalRanking
 import OGDF.SugiyamaLayout
 import STD.CppString
 import STD.Deletable
-
-TH.genListInstanceFor
-  NonCPrim
-  ( [t|DPoint|],
-    TPInfo
-      { tpinfoCxxType = "DPoint",
-        tpinfoCxxHeaders = ["ogdf/basic/geometry.h", "OGDFType.h"],
-        tpinfoCxxNamespaces = ["ogdf"],
-        tpinfoSuffix = "DPoint"
-      }
-  )
 
 nodeGraphics     = 0x000001
 edgeGraphics     = 0x000002

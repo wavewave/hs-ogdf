@@ -20,6 +20,7 @@ import OGDF.GraphAttributes
 import OGDF.GraphIO
 import qualified OGDF.List.TH as TH
 import OGDF.List.Template
+import OGDF.ListIterator.Template
 import OGDF.NodeElement
 
 TH.genListInstanceFor
