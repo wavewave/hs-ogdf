@@ -15,7 +15,7 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         overlayGHC = final: prev: {
-          haskellPackages = prev.haskell.packages.ghc923;
+          haskellPackages = prev.haskellPackages;
         };
         pkgs = import nixpkgs {
           overlays = [ overlayGHC (fficxx.overlay.${system}) ];
