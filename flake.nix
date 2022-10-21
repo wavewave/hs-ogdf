@@ -53,6 +53,8 @@
         packages =
           pkgs.lib.genAttrs supportedCompilers (compiler: hpkgsFor compiler);
 
+        inherit haskellOverlay;
+
         devShells =
           pkgs.lib.genAttrs supportedCompilers (compiler: mkShellFor compiler);
       });
