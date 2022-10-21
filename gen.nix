@@ -1,11 +1,9 @@
-{ pkgs }:
-
-with pkgs;
+{ stdenv }:
+hself:
 
 let
 
-  hsenv =
-    haskellPackages.ghcWithPackages (p: with p; [ fficxx fficxx-runtime ]);
+  hsenv = hself.ghcWithPackages (p: with p; [ fficxx fficxx-runtime ]);
 
 in stdenv.mkDerivation {
   name = "OGDF-src";

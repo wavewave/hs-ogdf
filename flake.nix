@@ -6,7 +6,7 @@
       "github:NixOS/nixpkgs/31997025a4d59f09a9b4c55a3c6ff5ade48de2d6";
     flake-utils.url = "github:numtide/flake-utils";
     fficxx = {
-      url = "github:wavewave/fficxx/aarch64-darwin";
+      url = "github:wavewave/fficxx/no-intermediate-step";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
@@ -14,57 +14,32 @@
   outputs = { self, nixpkgs, flake-utils, fficxx }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        overlayGHC = final: prev: {
-          haskellPackages = prev.haskellPackages;
-        };
-        pkgs = import nixpkgs {
-          overlays = [ overlayGHC (fficxx.overlay.${system}) ];
-          inherit system;
-          config.allowBroken = true;
-        };
+        pkgs = import nixpkgs { inherit system; };
 
-        ogdf = pkgs.callPackage ./ogdf { };
+        haskellOverlay = final: hself: hsuper:
+          (import ./default.nix { pkgs = final; } hself hsuper);
 
-        finalHaskellOverlay = self: super:
-          (import ./default.nix { inherit pkgs ogdf; } self super);
-
-        newHaskellPackages = pkgs.haskellPackages.extend finalHaskellOverlay;
+        hpkgsGhc902 = pkgs.haskell.packages.ghc902.extend (hself: hsuper:
+          (fficxx.haskellOverlay.${system} pkgs hself hsuper
+            // haskellOverlay pkgs hself hsuper));
 
       in {
-        packages = {
-          inherit ogdf;
-          inherit (newHaskellPackages) OGDF;
-        };
+        packages = { inherit (hpkgsGhc902) ogdf OGDF; };
 
-        # see these issues and discussions:
-        # - https://github.com/NixOS/nixpkgs/issues/16394
-        # - https://github.com/NixOS/nixpkgs/issues/25887
-        # - https://github.com/NixOS/nixpkgs/issues/26561
-        # - https://discourse.nixos.org/t/nix-haskell-development-2020/6170
-        overlay = final: prev: {
-          ogdf = final.callPackage ./ogdf { };
-          haskellPackages = prev.haskellPackages.override (old: {
-            overrides =
-              final.lib.composeExtensions (old.overrides or (_: _: { }))
-              finalHaskellOverlay;
-          });
+        devShells.default = let
+          hsenv = hpkgsGhc902.ghcWithPackages (p: [
+            p.cabal-install
+            p.extra
+            p.fficxx
+            p.fficxx-runtime
+            p.stdcxx
+            p.formatting
+            p.monad-loops
+          ]);
+        in pkgs.mkShell {
+          buildInputs =
+            [ hsenv hpkgsGhc902.ogdf pkgs.pkgconfig pkgs.nixfmt pkgs.ormolu ];
+          shellHook = "";
         };
-
-        devShell = with pkgs;
-          let
-            hsenv = haskellPackages.ghcWithPackages (p: [
-              p.cabal-install
-              p.extra
-              p.fficxx
-              p.fficxx-runtime
-              p.ormolu
-              p.stdcxx
-              p.formatting
-              p.monad-loops
-            ]);
-          in mkShell {
-            buildInputs = [ hsenv ogdf pkgconfig nixfmt ];
-            shellHook = "";
-          };
       });
 }

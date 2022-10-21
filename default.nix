@@ -1,13 +1,16 @@
-{ pkgs, ogdf }:
+{ pkgs }:
+
+hself: hsuper:
 
 let
 
-  OGDF-src = pkgs.callPackage ./gen.nix { };
+  OGDF-src = (pkgs.callPackage ./gen.nix { }) hself;
 
-in self: super:
-
-{
-  "OGDF" = self.callPackage ({ mkDerivation, base, fficxx, fficxx-runtime
+in rec {
+  # C++ library
+  "ogdf" = pkgs.callPackage ./ogdf { };
+  # Haskell binding library
+  "OGDF" = hself.callPackage ({ mkDerivation, base, fficxx, fficxx-runtime
     , stdenv, template-haskell, stdcxx, ogdf }:
     mkDerivation {
       pname = "OGDF";
