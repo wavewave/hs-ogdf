@@ -6,7 +6,7 @@
       "github:NixOS/nixpkgs/71c5816834f93840dd301ec384c9d7947e97c27d";
     flake-utils.url = "github:numtide/flake-utils";
     fficxx = {
-      url = "github:wavewave/fficxx/no-intermediate-step";
+      url = "github:wavewave/fficxx/master";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };

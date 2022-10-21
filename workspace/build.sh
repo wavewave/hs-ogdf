@@ -1,5 +1,5 @@
 rm -rf dist-newstyle
-runhaskell ../Gen.hs
+cabal exec -- runhaskell ../Gen.hs
 cabal build OGDF
 cabal exec -- ghc -package extra hierarchy-hs.hs
 cabal exec -- ghc manual-hs.hs
