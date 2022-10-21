@@ -35,7 +35,6 @@
               p.fficxx
               p.fficxx-runtime
               p.stdcxx
-              p.formatting
               p.monad-loops
             ]);
           in pkgs.mkShell {
