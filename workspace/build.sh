@@ -6,5 +6,5 @@ cabal exec -- ghc manual-hs.hs
 cabal exec -- ghc manual2.hs -package monad-loops
 cabal exec -- ghc manual3.hs -package monad-loops
 
-c++ -std=c++11  -c  hierarchy.cc
-c++ -o hierarchy-cc.exe hierarchy.o -logdf
+c++ -std=c++11  -c  multilevel.cc
+c++ -o multilevel.exe multilevel.o -logdf
