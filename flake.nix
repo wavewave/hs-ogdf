@@ -1,9 +1,9 @@
 {
   description = "OGDF";
   inputs = {
-    # nixpkgs/master on 2022-07-18
+    # nixpkgs/master on 2022-10-21
     nixpkgs.url =
-      "github:NixOS/nixpkgs/31997025a4d59f09a9b4c55a3c6ff5ade48de2d6";
+      "github:NixOS/nixpkgs/71c5816834f93840dd301ec384c9d7947e97c27d";
     flake-utils.url = "github:numtide/flake-utils";
     fficxx = {
       url = "github:wavewave/fficxx/no-intermediate-step";
@@ -19,27 +19,42 @@
         haskellOverlay = final: hself: hsuper:
           (import ./default.nix { pkgs = final; } hself hsuper);
 
-        hpkgsGhc902 = pkgs.haskell.packages.ghc902.extend (hself: hsuper:
-          (fficxx.haskellOverlay.${system} pkgs hself hsuper
-            // haskellOverlay pkgs hself hsuper));
+        hpkgsFor = compiler:
+          pkgs.haskell.packages.${compiler}.extend (hself: hsuper:
+            (fficxx.haskellOverlay.${system} pkgs hself hsuper
+              // haskellOverlay pkgs hself hsuper));
 
+        mkPackages = compiler: { inherit (hpkgsFor compiler) ogdf OGDF; };
+
+        # TODO: use haskell.packages.(ghc).shellFor
+        mkShellFor = compiler:
+          let
+            hsenv = (hpkgsFor compiler).ghcWithPackages (p: [
+              p.cabal-install
+              p.extra
+              p.fficxx
+              p.fficxx-runtime
+              p.stdcxx
+              p.formatting
+              p.monad-loops
+            ]);
+          in pkgs.mkShell {
+            buildInputs = [
+              hsenv
+              (hpkgsFor compiler).ogdf
+              pkgs.pkgconfig
+              pkgs.nixfmt
+              pkgs.ormolu
+            ];
+            shellHook = "";
+          };
+
+        supportedCompilers = [ "ghc902" "ghc924" "ghc942" ];
       in {
-        packages = { inherit (hpkgsGhc902) ogdf OGDF; };
+        packages =
+          pkgs.lib.genAttrs supportedCompilers (compiler: hpkgsFor compiler);
 
-        devShells.default = let
-          hsenv = hpkgsGhc902.ghcWithPackages (p: [
-            p.cabal-install
-            p.extra
-            p.fficxx
-            p.fficxx-runtime
-            p.stdcxx
-            p.formatting
-            p.monad-loops
-          ]);
-        in pkgs.mkShell {
-          buildInputs =
-            [ hsenv hpkgsGhc902.ogdf pkgs.pkgconfig pkgs.nixfmt pkgs.ormolu ];
-          shellHook = "";
-        };
+        devShells =
+          pkgs.lib.genAttrs supportedCompilers (compiler: mkShellFor compiler);
       });
 }
