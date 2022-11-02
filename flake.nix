@@ -36,6 +36,7 @@
               p.fficxx-runtime
               p.stdcxx
               p.monad-loops
+              p.dotgen
             ]);
           in pkgs.mkShell {
             buildInputs = [
@@ -44,6 +45,7 @@
               pkgs.pkgconfig
               pkgs.nixfmt
               pkgs.ormolu
+              pkgs.graphviz
             ];
             shellHook = "";
           };

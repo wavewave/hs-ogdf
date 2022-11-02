@@ -1,5 +1,4 @@
--- packages: ../../fficxx/fficxx/
---           ../../fficxx/fficxx-runtime/
---           ../../fficxx/result/
-
-optional-packages: OGDF/
+optional-packages: ../../fficxx/fficxx/
+                   ../../fficxx/fficxx-runtime/
+                   stdcxx/
+                   OGDF/

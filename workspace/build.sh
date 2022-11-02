@@ -1,4 +1,7 @@
 rm -rf dist-newstyle
+cabal build fficxx
+cabal exec runhaskell ../../fficxx/stdcxx-gen/Gen.hs
+cabal build stdcxx
 cabal exec -- runhaskell ../Gen.hs
 cabal build OGDF
 cabal exec -- ghc -package extra hierarchy-hs.hs
