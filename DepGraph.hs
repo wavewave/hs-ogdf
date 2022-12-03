@@ -2,11 +2,14 @@
 
 module Main where
 
-import OGDFIDL (classes)
+import OGDFIDL (classes, templates)
 import qualified Data.HashMap.Strict as HM
 import FFICXX.Generate.Type.Class
   ( Class (..),
     TemplateClass (..),
+  )
+import FFICXX.Generate.Type.Module
+  ( TemplateClassImportHeader (..),
   )
 import Data.Foldable (for_)
 import qualified Data.List as L
@@ -25,13 +28,13 @@ main :: IO ()
 main = do
   -- simpleBuilder fficfg sbcfg
   let format :: Either TemplateClass Class -> String
-      format (Left t) = tclass_name t
+      format (Left t) = tclass_name t ++ "<T>"
       format (Right c) = class_name c
-      mkDep :: Class -> (String, [String])
+      mkDep :: Either TemplateClass Class -> (String, [String])
       mkDep c =
-        let ds = mkModuleDepHighSource (Right c) -- mkModuleDepHighNonSource (Right c)
-         in (format (Right c), fmap format ds)
-      depmap = fmap mkDep classes
+        let ds = mkModuleDepHighNonSource c <> mkModuleDepHighSource c
+         in (format c, fmap format ds)
+      depmap = fmap mkDep (fmap Right classes <> fmap (Left . tcihTClass) templates)
       allSyms =
         L.nub . L.sort $
           fmap fst depmap ++ concatMap snd depmap
