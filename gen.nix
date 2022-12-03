@@ -10,7 +10,7 @@ in stdenv.mkDerivation {
   buildInputs = [ hsenv ];
   src = ./.;
   buildPhase = ''
-    ghc Gen.hs
+    ghc Gen.hs OGDFIDL.hs
     ./Gen ./template
   '';
   installPhase = ''
