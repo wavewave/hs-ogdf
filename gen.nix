@@ -3,7 +3,7 @@ hself:
 
 let
 
-  hsenv = hself.ghcWithPackages (p: with p; [ fficxx fficxx-runtime ]);
+  hsenv = hself.ghcWithPackages (p: with p; [ fficxx fficxx-runtime optparse-applicative ]);
 
 in stdenv.mkDerivation {
   name = "OGDF-src";
@@ -11,7 +11,7 @@ in stdenv.mkDerivation {
   src = ./.;
   buildPhase = ''
     ghc Gen.hs OGDFIDL.hs
-    ./Gen ./template
+    ./Gen gen -t ./template
   '';
   installPhase = ''
     mkdir -p $out

@@ -30,10 +30,10 @@
         mkShellFor = compiler:
           let
             hsenv = (hpkgsFor compiler).ghcWithPackages (p: [
-              p.cabal-install
               p.extra
               p.fficxx
               p.fficxx-runtime
+              p.optparse-applicative
               p.stdcxx
               p.monad-loops
               p.dotgen
@@ -42,6 +42,7 @@
             buildInputs = [
               hsenv
               (hpkgsFor compiler).ogdf
+              pkgs.cabal-install
               pkgs.pkgconfig
               pkgs.nixfmt
               pkgs.ormolu

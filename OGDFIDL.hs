@@ -65,8 +65,6 @@ import Data.Foldable (for_)
 import qualified Data.List as L
 import Data.Maybe (mapMaybe)
 import Data.Tuple (swap)
-import FFICXX.Generate.Dependency (mkModuleDepHighNonSource, mkModuleDepHighSource)
-
 
 -- -------------------------------------------------------------------
 -- import from stdcxx
