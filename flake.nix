@@ -1,9 +1,7 @@
 {
   description = "OGDF";
   inputs = {
-    # nixpkgs/master on 2022-10-21
-    nixpkgs.url =
-      "github:NixOS/nixpkgs/71c5816834f93840dd301ec384c9d7947e97c27d";
+    nixpkgs.url = "github:wavewave/nixpkgs/wavewave/ogdf";
     flake-utils.url = "github:numtide/flake-utils";
     fficxx = {
       url = "github:wavewave/fficxx/master";
@@ -24,7 +22,7 @@
             (fficxx.haskellOverlay.${system} pkgs hself hsuper
               // haskellOverlay pkgs hself hsuper));
 
-        mkPackages = compiler: { inherit (hpkgsFor compiler) ogdf OGDF; };
+        mkPackages = compiler: { inherit (hpkgsFor compiler) OGDF; };
 
         # TODO: use haskell.packages.(ghc).shellFor
         mkShellFor = compiler:
@@ -41,7 +39,7 @@
           in pkgs.mkShell {
             buildInputs = [
               hsenv
-              (hpkgsFor compiler).ogdf
+              pkgs.ogdf
               pkgs.cabal-install
               pkgs.pkgconfig
               pkgs.nixfmt
