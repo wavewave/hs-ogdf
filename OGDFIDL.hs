@@ -74,7 +74,7 @@ import Data.Tuple (swap)
 stdcxx_cabal =
   Cabal
     { cabal_pkgname = CabalName "stdcxx",
-      cabal_version = "0.5",
+      cabal_version = "0.7.0.0",
       cabal_cheaderprefix = "STD",
       cabal_moduleprefix = "STD",
       cabal_additional_c_incs = [],
@@ -123,13 +123,13 @@ string =
 cabal =
   Cabal
     { cabal_pkgname = CabalName "OGDF",
-      cabal_version = "0.5",
+      cabal_version = "1.0.0.0",
       cabal_cheaderprefix = "OGDF",
       cabal_moduleprefix = "OGDF",
       cabal_additional_c_incs = [],
       cabal_additional_c_srcs = [],
       cabal_additional_pkgdeps = [CabalName "stdcxx"],
-      cabal_license = Just "BSD-3-Clause",
+      cabal_license = Just "BSD-2-Clause",
       cabal_licensefile = Just "LICENSE",
       cabal_extraincludedirs = [],
       cabal_extralibdirs = [],
