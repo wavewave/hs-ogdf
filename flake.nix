@@ -36,9 +36,12 @@
               p.monad-loops
               p.dotgen
             ]);
+            pyenv = pkgs.python3.withPackages
+              (p: [ p.sphinx p.sphinx_rtd_theme p.myst-parser ]);
           in pkgs.mkShell {
             buildInputs = [
               hsenv
+              pyenv
               pkgs.ogdf
               pkgs.cabal-install
               pkgs.pkgconfig
