@@ -1,4 +1,1 @@
-optional-packages: ../../fficxx/fficxx
-                   ../../fficxx/fficxx-runtime
-                   stdcxx
-                   OGDF
+optional-packages: OGDF

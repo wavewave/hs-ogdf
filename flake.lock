@@ -1,29 +1,5 @@
 {
   "nodes": {
-    "fficxx": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1671238981,
-        "narHash": "sha256-GcXhLFDw+KLMcirtpEyap9BjbXqbl5KgPChglq+zobs=",
-        "owner": "wavewave",
-        "repo": "fficxx",
-        "rev": "e926340dbffdd2271fecb6003a43c54f34adf8e9",
-        "type": "github"
-      },
-      "original": {
-        "owner": "wavewave",
-        "ref": "master",
-        "repo": "fficxx",
-        "type": "github"
-      }
-    },
     "flake-utils": {
       "locked": {
         "lastModified": 1656928814,
@@ -41,11 +17,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1670523482,
-        "narHash": "sha256-1ZWE1CalCCBYvDXsvFMi7ic7wj3FTBu/x/DbWRWJ/zY=",
+        "lastModified": 1672951826,
+        "narHash": "sha256-QICDm0wYIAI+VLtt7wM+MsexgwgixFUb5iiRpo5WIEg=",
         "owner": "wavewave",
         "repo": "nixpkgs",
-        "rev": "7d0e9079f6c339d23f416da5a29b3d460d220b30",
+        "rev": "bd1cb8a3f978907c40d85c2bd5d14826365d8067",
         "type": "github"
       },
       "original": {
@@ -57,7 +33,6 @@
     },
     "root": {
       "inputs": {
-        "fficxx": "fficxx",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs"
       }

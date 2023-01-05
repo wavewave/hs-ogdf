@@ -3,13 +3,8 @@
   inputs = {
     nixpkgs.url = "github:wavewave/nixpkgs/wavewave/ogdf";
     flake-utils.url = "github:numtide/flake-utils";
-    fficxx = {
-      url = "github:wavewave/fficxx/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-    };
   };
-  outputs = { self, nixpkgs, flake-utils, fficxx }:
+  outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
@@ -17,10 +12,21 @@
         haskellOverlay = final: hself: hsuper:
           (import ./default.nix { pkgs = final; } hself hsuper);
 
+        fficxx-version = "0.7.0.0";
+
         hpkgsFor = compiler:
           pkgs.haskell.packages.${compiler}.extend (hself: hsuper:
-            (fficxx.haskellOverlay.${system} pkgs hself hsuper
-              // haskellOverlay pkgs hself hsuper));
+            {
+              "fficxx" = hself.callHackage "fficxx" fficxx-version { };
+              "fficxx-runtime" =
+                hself.callHackage "fficxx-runtime" fficxx-version { };
+              "stdcxx" = hself.callHackage "stdcxx" fficxx-version { };
+              "template" = pkgs.haskell.lib.doJailbreak hsuper.template;
+              "ormolu" = pkgs.haskell.lib.overrideCabal hsuper.ormolu
+                (drv: { enableSeparateBinOutput = false; });
+            }
+            # (fficxx.haskellOverlay.${system} pkgs hself hsuper
+            // haskellOverlay pkgs hself hsuper);
 
         mkPackages = compiler: { inherit (hpkgsFor compiler) OGDF; };
 
@@ -46,8 +52,9 @@
               pkgs.cabal-install
               pkgs.pkgconfig
               pkgs.nixfmt
-              pkgs.ormolu
               pkgs.graphviz
+              # this is due to https://github.com/NixOS/nixpkgs/issues/140774
+              (hpkgsFor "ghc924").ormolu
             ];
             shellHook = "";
           };
