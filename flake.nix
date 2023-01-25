@@ -33,28 +33,42 @@
         # TODO: use haskell.packages.(ghc).shellFor
         mkShellFor = compiler:
           let
+            myStdenv = pkgs.clang13Stdenv;
+            ghc = pkgs.haskell.compiler.${compiler}.override (old: {
+              stdenv = myStdenv;
+              targetPackages = old.targetPackages.extend
+                (self: super: { stdenv = myStdenv; });
+              pkgsHostTarget = old.pkgsHostTarget.extend (self: super: {
+                targetPackages = super.targetPackages.extend (self: super: { stdenv = myStdenv; });
+              });
+              pkgsBuildTarget = old.pkgsBuildTarget.extend (self: super: {
+                targetPackages =
+                  old.targetPackages.extend (self: super: { stdenv = myStdenv; });
+              });
+            });
             hsenv = (hpkgsFor compiler).ghcWithPackages (p: [
-              p.extra
-              p.fficxx
-              p.fficxx-runtime
-              p.optparse-applicative
-              p.stdcxx
-              p.monad-loops
-              p.dotgen
+              #p.extra
+              #p.fficxx
+              #p.fficxx-runtime
+              #p.optparse-applicative
+              #p.stdcxx
+              #p.monad-loops
+              #p.dotgen
             ]);
-            pyenv = pkgs.python3.withPackages
-              (p: [ p.sphinx p.sphinx_rtd_theme p.myst-parser ]);
+            #pyenv = pkgs.python3.withPackages
+            #  (p: [ p.sphinx p.sphinx_rtd_theme p.myst-parser ]);
           in pkgs.mkShell {
             buildInputs = [
-              hsenv
-              pyenv
-              pkgs.ogdf
-              pkgs.cabal-install
-              pkgs.pkgconfig
-              pkgs.nixfmt
-              pkgs.graphviz
+              ghc
+              #hsenv
+              #pyenv
+              #pkgs.ogdf
+              #pkgs.cabal-install
+              #pkgs.pkgconfig
+              #pkgs.nixfmt
+              #pkgs.graphviz
               # this is due to https://github.com/NixOS/nixpkgs/issues/140774
-              (hpkgsFor "ghc924").ormolu
+              #(hpkgsFor "ghc924").ormolu
             ];
             shellHook = "";
           };
