@@ -9,9 +9,9 @@
 import sphinx_rtd_theme
 
 project = 'hs-ogdf'
-copyright = '2019-2022, Ian-Woo Kim'
+copyright = '2019-2023, Ian-Woo Kim'
 author = 'Ian-Woo Kim'
-release = '1.0.0.0'
+release = '1.0.0.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
