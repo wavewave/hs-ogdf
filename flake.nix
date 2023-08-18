@@ -12,23 +12,18 @@
   outputs = { self, nixpkgs, flake-utils, fficxx }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowBroken = true;
+        };
 
         haskellOverlay = final: hself: hsuper:
           (import ./default.nix { pkgs = final; } hself hsuper);
 
-        #fficxx-version = "0.7.0.1";
-
         hpkgsFor = compiler:
           pkgs.haskell.packages.${compiler}.extend (hself: hsuper:
             (fficxx.haskellOverlay.${system} pkgs hself hsuper //          
-            # temporarily commented out until the hackage is updated.
             {
-              #"fficxx" = hself.callHackage "fficxx" fficxx-version { };
-              #"fficxx-runtime" =
-              #  hself.callHackage "fficxx-runtime" fficxx-version { };
-              #"stdcxx" = hself.callHackage "stdcxx" fficxx-version { };
-              #"template" = pkgs.haskell.lib.doJailbreak hsuper.template;
               "ormolu" = pkgs.haskell.lib.overrideCabal hsuper.ormolu
                 (drv: { enableSeparateBinOutput = false; });
             }
@@ -58,16 +53,15 @@
               pkgs.cabal-install
               pkgs.pkgconfig
               pkgs.nixfmt
+              pkgs.ormolu
               pkgs.graphviz
-              # this is due to https://github.com/NixOS/nixpkgs/issues/140774
-              (hpkgsFor "ghc924").ormolu
             ];
             shellHook = ''
               export PS1="\n[hs-ogdf:\w]$ \0"
             '';
           };
 
-        supportedCompilers = [ "ghc902" "ghc924" "ghc942" ];
+        supportedCompilers = [ "ghc962" ];
       in {
         packages =
           pkgs.lib.genAttrs supportedCompilers (compiler: hpkgsFor compiler);
