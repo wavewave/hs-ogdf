@@ -10,16 +10,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1693195975,
+        "lastModified": 1693199375,
         "narHash": "sha256-1KLYlpgEP+b+Rm3PDdI76xTURYMjuez+4+GB0vv4aw0=",
         "owner": "wavewave",
         "repo": "fficxx",
-        "rev": "f74505865ae7221b204280ee04055b310206be75",
+        "rev": "c5f75027ee3bdb4c88ec395a47c1bc02431bd073",
         "type": "github"
       },
       "original": {
         "owner": "wavewave",
-        "ref": "fix-paren",
+        "ref": "master",
         "repo": "fficxx",
         "type": "github"
       }
