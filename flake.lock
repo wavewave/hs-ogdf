@@ -10,16 +10,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1693189960,
-        "narHash": "sha256-rJgFsjpaJCr/PSjKnZ+ewyup0ovQgjKBQEFf2D16FPs=",
+        "lastModified": 1693195975,
+        "narHash": "sha256-1KLYlpgEP+b+Rm3PDdI76xTURYMjuez+4+GB0vv4aw0=",
         "owner": "wavewave",
         "repo": "fficxx",
-        "rev": "81486f92dfcbdd6e840dcc46b2abcf07f2acde21",
+        "rev": "f74505865ae7221b204280ee04055b310206be75",
         "type": "github"
       },
       "original": {
         "owner": "wavewave",
-        "ref": "interruptible-safe-unsafe",
+        "ref": "fix-paren",
         "repo": "fficxx",
         "type": "github"
       }

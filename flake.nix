@@ -4,7 +4,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/master";
     flake-utils.url = "github:numtide/flake-utils";
     fficxx = {
-      url = "github:wavewave/fficxx/interruptible-safe-unsafe";
+      url = "github:wavewave/fficxx/fix-paren";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };    
@@ -32,7 +32,7 @@
         mkPackages = compiler: { inherit (hpkgsFor compiler) OGDF; };
 
         # TODO: use haskell.packages.(ghc).shellFor
-        mkShellFor = compiler:
+        mkShellFor = isEnv: compiler:
           let
             hsenv = (hpkgsFor compiler).ghcWithPackages (p: [
               p.extra
@@ -42,9 +42,17 @@
               p.stdcxx
               p.monad-loops
               p.dotgen
-            ]);
+            ] ++ (
+              if isEnv
+              then [p.OGDF]
+              else []
+            ));
             pyenv = pkgs.python3.withPackages
               (p: [ p.sphinx p.sphinx_rtd_theme p.myst-parser ]);
+            prompt =
+              if isEnv
+              then "hs-ogdf-env"
+              else "hs-ogdf-dev";
           in pkgs.mkShell {
             buildInputs = [
               hsenv
@@ -57,18 +65,23 @@
               pkgs.graphviz
             ];
             shellHook = ''
-              export PS1="\n[hs-ogdf:\w]$ \0"
+              export PS1="\n[${prompt}:\w]$ \0"
             '';
           };
 
         supportedCompilers = [ "ghc962" ];
-      in {
+        defaultCompiler = "ghc962";
+      in rec {
         packages =
           pkgs.lib.genAttrs supportedCompilers (compiler: hpkgsFor compiler);
 
         inherit haskellOverlay;
 
         devShells =
-          pkgs.lib.genAttrs supportedCompilers (compiler: mkShellFor compiler);
+          pkgs.lib.genAttrs supportedCompilers (compiler: mkShellFor false compiler)
+          // {
+            default = devShells.${defaultCompiler};
+            env = mkShellFor true defaultCompiler;
+          };
       });
 }
