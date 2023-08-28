@@ -28,6 +28,7 @@ import FFICXX.Generate.Util.DepGraph (drawDepGraph)
 import OGDFIDL
   ( cabal,
     classes,
+    enums,
     extraDep,
     extraLib,
     headers,
@@ -88,6 +89,7 @@ main = do
                 sbcModUnitMap = ModuleUnitMap (HM.fromList headers),
                 sbcCabal = cabal,
                 sbcClasses = classes,
+                sbcEnums = enums,
                 sbcTopLevels = toplevelfunctions,
                 sbcTemplates = templates,
                 sbcExtraLibs = extraLib,

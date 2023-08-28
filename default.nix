@@ -12,7 +12,7 @@ in rec {
     , stdenv, template-haskell, stdcxx, ogdf }:
     mkDerivation {
       pname = "OGDF";
-      version = "0.0";
+      version = "1.0.1.0";
       src = OGDF-src;
       libraryHaskellDepends =
         [ base fficxx fficxx-runtime template-haskell stdcxx ];
