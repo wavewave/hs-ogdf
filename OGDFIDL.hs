@@ -57,6 +57,7 @@ import FFICXX.Generate.Type.Config
     modImports,
   )
 import FFICXX.Generate.Type.Module (TemplateClassImportHeader (..))
+import FFICXX.Runtime.Types (FFISafety (..))
 import System.Directory (getCurrentDirectory)
 import System.Environment (getArgs)
 import System.FilePath ((</>))
@@ -154,6 +155,7 @@ t_List =
     (FormSimple "ogdf::List")
     ["tp1"]
     [ TFun
+        FFIUnsafe
         (
           TemplateApp
             TemplateAppInfo
@@ -166,6 +168,7 @@ t_List =
         "begin"
         [],
       TFun
+        FFIUnsafe
         (
           TemplateApp
             TemplateAppInfo
@@ -178,6 +181,7 @@ t_List =
         "end"
         [],
       TFun
+        FFIUnsafe
         ( TemplateAppRef
             TemplateAppInfo
               { tapp_tclass = t_ListIterator,
@@ -199,11 +203,13 @@ t_ListIterator =
     (FormSimple "ListIterator")
     ["tp1"]
     [ TFunOp
-        { tfun_ret = TemplateParam "tp1",
+        { tfun_safety = FFIUnsafe,
+          tfun_ret = TemplateParam "tp1",
           tfun_name = "deRef",
           tfun_opexp = OpStar
         },
       TFun
+        FFIUnsafe
         ( -- TODO: this should be handled with self
           TemplateApp
             TemplateAppInfo
@@ -216,6 +222,7 @@ t_ListIterator =
         "pred"
         [],
       TFun
+        FFIUnsafe
         ( -- TODO: this should be handled with self
           TemplateApp
             TemplateAppInfo
@@ -227,7 +234,7 @@ t_ListIterator =
         "listIteratorSucc" -- to avoid conflict with Prelude.succ
         "succ"
         [],
-      TFun bool_ "valid" "valid" []
+      TFun FFIUnsafe bool_ "valid" "valid" []
     ]
     []
 
@@ -244,7 +251,7 @@ color =
     mempty
     Nothing
     [ Constructor [cppclassref string "str"] Nothing,
-      NonVirtual bool_ "fromString" [cppclassref string "str"] Nothing
+      NonVirtual FFIUnsafe bool_ "fromString" [cppclassref string "str"] Nothing
     ]
     []
     []
@@ -274,8 +281,8 @@ dRect =
     [deletable]
     mempty
     Nothing
-    [ NonVirtual double_ "height" [] Nothing,
-      NonVirtual double_ "width" [] Nothing
+    [ NonVirtual FFIUnsafe double_ "height" [] Nothing,
+      NonVirtual FFIUnsafe double_ "width" [] Nothing
     ]
     []
     []
@@ -289,11 +296,11 @@ edgeElement =
     [deletable]
     mempty
     Nothing
-    [ NonVirtual int_ "index" [] Nothing,
-      NonVirtual (cppclass_ nodeElement) "source" [] Nothing,
-      NonVirtual (cppclass_ nodeElement) "target" [] Nothing,
-      NonVirtual self_ "succ" [] Nothing,
-      NonVirtual self_ "pred" [] Nothing
+    [ NonVirtual FFIUnsafe int_ "index" [] Nothing,
+      NonVirtual FFIUnsafe (cppclass_ nodeElement) "source" [] Nothing,
+      NonVirtual FFIUnsafe (cppclass_ nodeElement) "target" [] Nothing,
+      NonVirtual FFIUnsafe self_ "succ" [] Nothing,
+      NonVirtual FFIUnsafe self_ "pred" [] Nothing
     ]
     []
     []
@@ -308,11 +315,11 @@ fastSimpleHierarchyLayout =
     mempty
     Nothing
     [ Constructor [] Nothing,
-      NonVirtual void_ "layerDistance" [double "x"] Nothing,
-      NonVirtual void_ "nodeDistance" [double "x"] Nothing,
-      NonVirtual void_ "downward" [bool "d"] Nothing,
-      NonVirtual void_ "leftToRight" [bool "b"] Nothing,
-      NonVirtual void_ "balanced" [bool "b"] Nothing
+      NonVirtual FFIUnsafe void_ "layerDistance" [double "x"] Nothing,
+      NonVirtual FFIUnsafe void_ "nodeDistance" [double "x"] Nothing,
+      NonVirtual FFIUnsafe void_ "downward" [bool "d"] Nothing,
+      NonVirtual FFIUnsafe void_ "leftToRight" [bool "b"] Nothing,
+      NonVirtual FFIUnsafe void_ "balanced" [bool "b"] Nothing
     ]
     []
     []
@@ -327,9 +334,9 @@ fMMMLayout =
     mempty
     Nothing
     [ Constructor [] Nothing,
-      NonVirtual void_ "useHighLevelOptions" [bool "uho"] Nothing,
-      NonVirtual void_ "unitEdgeLength" [double "x"] Nothing,
-      NonVirtual void_ "newInitialPlacement" [bool "nip"] Nothing
+      NonVirtual FFIUnsafe void_ "useHighLevelOptions" [bool "uho"] Nothing,
+      NonVirtual FFIUnsafe void_ "unitEdgeLength" [double "x"] Nothing,
+      NonVirtual FFIUnsafe void_ "newInitialPlacement" [bool "nip"] Nothing
       -- NonVirtual void_ "qualityVersusSpeed" [int "qvs"] Nothing -- qvs is FMMMOptions::QualityVsSpeed
     ]
     []
@@ -345,13 +352,13 @@ graph =
     mempty
     Nothing
     [ Constructor [] Nothing,
-      NonVirtual (cppclass_ nodeElement) "newNode" [] Nothing,
-      NonVirtual (cppclass_ nodeElement) "newNode" [int "index"] (Just "newNode1"),
-      NonVirtual (cppclass_ edgeElement) "newEdge" [cppclass nodeElement "v", cppclass nodeElement "w"] Nothing,
-      NonVirtual (cppclass_ nodeElement) "firstNode" [] Nothing,
-      NonVirtual (cppclass_ nodeElement) "lastNode" [] Nothing,
-      NonVirtual (cppclass_ edgeElement) "firstEdge" [] Nothing,
-      NonVirtual (cppclass_ edgeElement) "lastEdge" [] Nothing
+      NonVirtual FFIUnsafe (cppclass_ nodeElement) "newNode" [] Nothing,
+      NonVirtual FFIUnsafe (cppclass_ nodeElement) "newNode" [int "index"] (Just "newNode1"),
+      NonVirtual FFIUnsafe (cppclass_ edgeElement) "newEdge" [cppclass nodeElement "v", cppclass nodeElement "w"] Nothing,
+      NonVirtual FFIUnsafe (cppclass_ nodeElement) "firstNode" [] Nothing,
+      NonVirtual FFIUnsafe (cppclass_ nodeElement) "lastNode" [] Nothing,
+      NonVirtual FFIUnsafe (cppclass_ edgeElement) "firstEdge" [] Nothing,
+      NonVirtual FFIUnsafe (cppclass_ edgeElement) "lastEdge" [] Nothing
     ]
     []
     []
@@ -373,18 +380,18 @@ graphAttributes =
        mempty
        Nothing
        [ Constructor [cppclassref graph "g", long "initAttributes"] Nothing,
-         NonVirtual (cppclassref_ color) "fillColor" [cppclass nodeElement "v"] Nothing,
-         NonVirtual (cppclassref_ color) "fillBgColor" [cppclass nodeElement "v"] Nothing,
-         NonVirtual (ref_ CTDouble) "x" [cppclass nodeElement "v"] Nothing,
-         NonVirtual (ref_ CTDouble) "y" [cppclass nodeElement "v"] Nothing,
-         NonVirtual (ref_ CTDouble) "width" [cppclass nodeElement "v"] Nothing,
-         NonVirtual (ref_ CTDouble) "height" [cppclass nodeElement "v"] Nothing,
-         NonVirtual dPolylineRef_ "bends" [cppclass edgeElement "e"] Nothing,
-         NonVirtual (cppclassref_ string) "label" [cppclass nodeElement "v"] Nothing,
-         NonVirtual (cppclassref_ string) "label" [cppclass edgeElement "e"] (Just "graphAttributeslabelE"),
-         NonVirtual (ref_ CTDouble) "xLabel" [cppclass nodeElement "v"] Nothing,
-         NonVirtual (ref_ CTDouble) "yLabel" [cppclass nodeElement "v"] Nothing,
-         Virtual (cppclasscopy_ dRect) "boundingBox" [] Nothing
+         NonVirtual FFIUnsafe (cppclassref_ color) "fillColor" [cppclass nodeElement "v"] Nothing,
+         NonVirtual FFIUnsafe (cppclassref_ color) "fillBgColor" [cppclass nodeElement "v"] Nothing,
+         NonVirtual FFIUnsafe (ref_ CTDouble) "x" [cppclass nodeElement "v"] Nothing,
+         NonVirtual FFIUnsafe (ref_ CTDouble) "y" [cppclass nodeElement "v"] Nothing,
+         NonVirtual FFIUnsafe (ref_ CTDouble) "width" [cppclass nodeElement "v"] Nothing,
+         NonVirtual FFIUnsafe (ref_ CTDouble) "height" [cppclass nodeElement "v"] Nothing,
+         NonVirtual FFIUnsafe dPolylineRef_ "bends" [cppclass edgeElement "e"] Nothing,
+         NonVirtual FFIUnsafe (cppclassref_ string) "label" [cppclass nodeElement "v"] Nothing,
+         NonVirtual FFIUnsafe (cppclassref_ string) "label" [cppclass edgeElement "e"] (Just "graphAttributeslabelE"),
+         NonVirtual FFIUnsafe (ref_ CTDouble) "xLabel" [cppclass nodeElement "v"] Nothing,
+         NonVirtual FFIUnsafe (ref_ CTDouble) "yLabel" [cppclass nodeElement "v"] Nothing,
+         Virtual FFIUnsafe (cppclasscopy_ dRect) "boundingBox" [] Nothing
        ]
        []
        []
@@ -398,9 +405,9 @@ graphIO =
     [deletable]
     mempty
     Nothing
-    [ Static bool_ "read" [cppclassref graphAttributes "ga", cppclassref graph "g", cppclassref string "filename"] Nothing,
-      Static bool_ "write" [cppclassref graphAttributes "ga", cppclassref string "filename"] Nothing,
-      Static bool_ "drawSVG" [cppclassref graphAttributes "ga", cppclassref string "filename"] Nothing
+    [ Static FFIUnsafe bool_ "read" [cppclassref graphAttributes "ga", cppclassref graph "g", cppclassref string "filename"] Nothing,
+      Static FFIUnsafe bool_ "write" [cppclassref graphAttributes "ga", cppclassref string "filename"] Nothing,
+      Static FFIUnsafe bool_ "drawSVG" [cppclassref graphAttributes "ga", cppclassref string "filename"] Nothing
     ]
     []
     []
@@ -453,7 +460,7 @@ layoutModule =
     [deletable]
     mempty
     Nothing
-    [ Virtual void_ "call" [cppclassref graphAttributes "ga"] Nothing
+    [ Virtual FFIUnsafe void_ "call" [cppclassref graphAttributes "ga"] Nothing
     ]
     []
     []
@@ -480,12 +487,12 @@ nodeElement =
     [deletable]
     mempty
     Nothing
-    [ NonVirtual int_ "index" [] Nothing,
-      NonVirtual int_ "indeg" [] Nothing,
-      NonVirtual int_ "outdeg" [] Nothing,
-      NonVirtual int_ "degree" [] Nothing,
-      NonVirtual self_ "succ" [] Nothing,
-      NonVirtual self_ "pred" [] Nothing
+    [ NonVirtual FFIUnsafe int_ "index" [] Nothing,
+      NonVirtual FFIUnsafe int_ "indeg" [] Nothing,
+      NonVirtual FFIUnsafe int_ "outdeg" [] Nothing,
+      NonVirtual FFIUnsafe int_ "degree" [] Nothing,
+      NonVirtual FFIUnsafe self_ "succ" [] Nothing,
+      NonVirtual FFIUnsafe self_ "pred" [] Nothing
     ]
     []
     []
@@ -500,9 +507,9 @@ optimalHierarchyLayout =
     mempty
     Nothing
     [ Constructor [] Nothing,
-      NonVirtual void_ "layerDistance" [double "x"] Nothing,
-      NonVirtual void_ "nodeDistance" [double "x"] Nothing,
-      NonVirtual void_ "weightBalancing" [double "w"] Nothing
+      NonVirtual FFIUnsafe void_ "layerDistance" [double "x"] Nothing,
+      NonVirtual FFIUnsafe void_ "nodeDistance" [double "x"] Nothing,
+      NonVirtual FFIUnsafe void_ "weightBalancing" [double "w"] Nothing
     ]
     []
     []
@@ -544,10 +551,10 @@ sugiyamaLayout =
     mempty
     Nothing
     [ Constructor [] Nothing,
-      NonVirtual void_ "pageRatio" [double "x"] Nothing,
-      NonVirtual void_ "setCrossMin" [cppclass layeredCrossMinModule "pCrossMin"] Nothing,
-      NonVirtual void_ "setLayout" [cppclass hierarchyLayoutModule "pLayout"] Nothing,
-      NonVirtual void_ "setRanking" [cppclass rankingModule "pRanking"] Nothing
+      NonVirtual FFIUnsafe void_ "pageRatio" [double "x"] Nothing,
+      NonVirtual FFIUnsafe void_ "setCrossMin" [cppclass layeredCrossMinModule "pCrossMin"] Nothing,
+      NonVirtual FFIUnsafe void_ "setLayout" [cppclass hierarchyLayoutModule "pLayout"] Nothing,
+      NonVirtual FFIUnsafe void_ "setRanking" [cppclass rankingModule "pRanking"] Nothing
     ]
     []
     []
@@ -575,6 +582,8 @@ classes =
     rankingModule,
     sugiyamaLayout
   ]
+
+enums = []
 
 toplevelfunctions = []
 
