@@ -1,17 +1,16 @@
-{ pkgs ? import <nixpkgs> { }
-, fficxxSrc ? (import ./nix/pinned.nix { inherit pkgs; }).fficxxSrc }:
-
-with pkgs;
-
-let
+{
+  pkgs ? import <nixpkgs> {},
+  fficxxSrc ? (import ./nix/pinned.nix {inherit pkgs;}).fficxxSrc,
+}:
+with pkgs; let
   # TODO: should be packaged into the upstream nixpkgs.
-  ogdf = callPackage ./ogdf/default.nix { };
+  ogdf = callPackage ./ogdf/default.nix {};
 
   newHaskellPackages0 = haskellPackages.override {
     overrides = self: super: {
       "fficxx-runtime" =
-        self.callCabal2nix "fficxx-runtime" (fficxxSrc + "/fficxx-runtime") { };
-      "fficxx" = self.callCabal2nix "fficxx" (fficxxSrc + "/fficxx") { };
+        self.callCabal2nix "fficxx-runtime" (fficxxSrc + "/fficxx-runtime") {};
+      "fficxx" = self.callCabal2nix "fficxx" (fficxxSrc + "/fficxx") {};
     };
   };
 
@@ -23,11 +22,10 @@ let
   newHaskellPackages = haskellPackages.override {
     overrides = self: super: {
       "fficxx-runtime" =
-        self.callCabal2nix "fficxx-runtime" (fficxxSrc + "/fficxx-runtime") { };
-      "fficxx" = self.callCabal2nix "fficxx" (fficxxSrc + "/fficxx") { };
-      "stdcxx" = self.callPackage stdcxxNix { };
+        self.callCabal2nix "fficxx-runtime" (fficxxSrc + "/fficxx-runtime") {};
+      "fficxx" = self.callCabal2nix "fficxx" (fficxxSrc + "/fficxx") {};
+      "stdcxx" = self.callPackage stdcxxNix {};
     };
-
   };
 
   hsenv = newHaskellPackages.ghcWithPackages (p:
@@ -41,10 +39,9 @@ let
       monad-loops
       stdcxx
     ]);
+in
+  stdenv.mkDerivation {
+    name = "hs-ogdf-dev";
 
-in stdenv.mkDerivation {
-  name = "hs-ogdf-dev";
-
-  buildInputs = [ ogdf pkgconfig hsenv ];
-
-}
+    buildInputs = [ogdf pkgconfig hsenv];
+  }
